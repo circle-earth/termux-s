@@ -352,6 +352,24 @@ EOF
   if ! grep -q 'source "$HOME/.profile"' "$HOME/.zprofile" 2>/dev/null; then
     printf '\n# profile source\nsource "$HOME/.profile"\n' >>"$HOME/.zprofile"
   fi
+
+  sed -i '/# theader aliases start/,/# theader aliases end/d' "$HOME/.zshrc" 2>/dev/null || true
+  cat >>"$HOME/.zshrc" <<'EOF'
+
+# theader aliases start
+source "$HOME/.profile"
+if command -v logo-ls >/dev/null 2>&1; then
+  unalias l ls l. la ll ll. 2>/dev/null
+  alias l='logo-ls'
+  alias ls='logo-ls'
+  alias l.='logo-ls -d .*'
+  alias la='logo-ls -A'
+  alias ll='logo-ls -al'
+  alias ll.='logo-ls -ald .*'
+fi
+# theader aliases end
+EOF
+
   mkdir -p "$theader_dir"
   for d in bin logo tpt lib theader.cfg; do
     if [[ -e "$SCRIPT_DIR/$d" ]]; then
