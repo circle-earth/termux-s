@@ -1,0 +1,35 @@
+# =========[ logo-ls aliases Setup ]=========
+
+if [ -n "$(command -v logo-ls)" ]; then
+    alias l='logo-ls'
+    alias ls='logo-ls'
+    alias l.='logo-ls -d .*'
+    alias la='logo-ls -A'
+    alias ll='logo-ls -al'
+    alias ll.='logo-ls -ald .*'
+else
+    alias l='ls --color=auto'
+    alias ls='ls --color=auto'
+    alias l.='ls --color=auto -d .*'
+    alias la='ls --color=auto -a'
+    alias ll='ls --color=auto -Fhl'
+    alias ll.='ls --color=auto -Fhl -d .*'
+fi
+
+# =========[  Replace cat with bat Setup ]=========
+if [ -n "$(command -v bat)" ]; then
+        alias cat='bat --decorations=never --paging=never'
+fi
+
+## Safety.
+alias history='history -a'
+alias cp='cp -i'
+alias ln='ln -i'
+alias mv='mv -i'
+alias rm='rm -i'
+
+
+# =========[  Neovim Text Editor ]=========
+if [ -n "$(command -v nvim)" ]; then
+        alias nv='nvim'
+fi

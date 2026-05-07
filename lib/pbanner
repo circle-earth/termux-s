@@ -1,0 +1,158 @@
+#!/usr/bin/bash
+
+# # Example usage
+# echo "=== FIGLET CENTER ==="
+# align_output "$figftemp" "$term_width" center
+#
+# echo "=== LOGO RIGHT ==="
+# align_output "$figftemp" "$term_width" right
+#
+# echo "=== FIGLET LEFT ==="
+# align_output "$logotemp" "$term_width" left
+# [==================(START)===================]
+user="$(mktemp)"
+figftemp="$(mktemp)"
+logotemp="$(mktemp)"
+term_width=$(stty size | cut -d ' ' -f 2)
+version="$(mktemp)"
+PUT() { echo -en "\033[${1};${2}H"; }
+DRAW() {
+  echo -en "\033%"
+  echo -en "\033(0"
+}
+WRITE() { echo -en "\033(B"; }
+HIDECURSOR() { echo -en "\033[?25l"; }
+NORM() { echo -en "\033[?12l\033[?25h"; }
+
+base64 -d >"$logotemp" <<'EOF'
+G1s0OW0gICAgICAgICAgICAgICAgG1swbQobWzQ5bSAgICAbWzM4OzI7MDs0MDsxMTNt4paEG1sz
+ODsyOzA7NDk7MTM2beKWhBtbMzg7MjswOzc1OzIxMDs0ODsyOzA7NDc7MTM0beKWhBtbMzg7Mjsw
+OzM0Ozk2OzQ4OzI7MDs3NjsyMTRt4paMG1szODsyOzA7NjA7MTY5OzQ5beKWhBtbMzg7MjswOzg1
+OzI0MDs0OW3ilowbWzM4OzI7MDszNDs5NDs0ODsyOzA7NzE7MjAwbeKWmBtbMzg7MjswOzQ1OzEy
+Njs0OW3iloQgICAgG1swbQobWzQ5bSAgG1szODsyOzA7Mzc7MTA0beKWhBtbMzg7MjswOzYyOzE3
+Nm3iloQbWzM4OzI7Njs4MzsyMjQ7NDg7MjsyMjE7MjI5OzIzOG3ilowbWzM4OzI7MTY5OzIxNDsy
+MTY7NDg7MjsyMzM7MjM3OzI0NG3ilpYbWzM4OzI7MjU1OzI1NTsyNTU7NDg7MjsyMjI7MjI4OzIz
+OW3iloTiloTiloTiloTiloQbWzM4OzI7MjM3OzI0MDsyNDY7NDg7Mjs3NDsxMTU7MTkzbeKWjBtb
+Mzg7MjswOzc5OzIyMTs0OW3ilowbWzM4OzI7MDs0MzsxMjA7NDlt4paEICAbWzBtChtbNDltICAb
+WzM4OzI7MDsyNDs2OTs0OW3iloQbWzM4OzI7MDszMzs5Mzs0ODsyOzA7NTg7MTYzbeKWjBtbMzg7
+Mjs4OzgzOzIxNzs0ODsyOzIxNzsyMzY7MjM3beKWjBtbMzg7Mjs1NjsxODU7MTkyOzQ4OzI7MjU1
+OzI1NTsyNTVt4paMG1szODsyOzI0MzsyNDU7MjQ5OzQ4OzI7NjQ7MTA3OzE5NG3ilpgbWzM4OzI7
+MzQ7OTI7MTk2OzQ4OzI7MjM0OzIzODsyNDVt4paWG1szODsyOzg7ODM7MjE3OzQ4OzI7OTk7MTMy
+OzE5MW3ilpYbWzM4OzI7NjY7MTEwOzE5Mzs0ODsyOzE3MDsxODY7MjE3beKWhBtbMzg7MjsxNDg7
+MTY5OzIwOTs0ODsyOzI1NTsyNTU7MjU1beKWjBtbMzg7MjsyNTU7MjU1OzI1NTs0ODsyOzkyOzEy
+ODsxOTRt4paMG1szODsyOzA7ODI7MjMxOzQ5beKWjBtbMzg7MjswOzI4OzgwOzQ5beKWhBtbNDlt
+ICAbWzBtChtbNDltICAbWzM4OzI7MDs2OzE2OzQ4OzI7MDs0OTsxMzlt4paMG1szODsyOzA7NTI7
+MTQ0OzQ4OzI7MDs2ODsxOTJt4paMG1szODsyOzg7ODM7MjE3OzQ4OzI7MjE3OzIzNjsyMzdt4paM
+G1szODsyOzU2OzE4NTsxOTI7NDg7MjsyMjc7MjMyOzI0MW3ilowbWzM4OzI7MjU1OzI1NTsyNTU7
+NDg7MjsxNTA7MTcwOzIxMG3iloQbWzQ4OzI7MTMzOzE1ODsyMDRt4paEG1szODsyOzgxOzEyMTsx
+OTM7NDg7MjsyNTU7MjU1OzI1NW3ilpgbWzM4OzI7MTQyOzE2NTsyMDdt4padG1szODsyOzE1NDsx
+NzQ7MjExbeKWmBtbMzg7MjsyNTU7MjU1OzI1NTs0ODsyOzkyOzEyODsxOTRt4paMG1szODsyOzA7
+ODU7MjM4OzQ4OzI7MDs1MjsxNDRt4paMG1szODsyOzA7NTI7MTQ0OzQ5beKWjBtbNDltICAbWzBt
+ChtbNDltICAgG1szODsyOzA7MzA7ODVt4paAG1szODsyOzIzOTsyNDc7MjQ3OzQ4OzI7MjI7ODQ7
+MjA3beKWnRtbMzg7Mjs1NjsxMDU7MTkyOzQ4OzI7MTA3OzE5MzsxOTht4paEG1s0ODsyOzEzOTsy
+MDI7MjA1beKWhOKWhOKWhOKWhBtbNDg7MjsyMjk7MjQxOzI0Mm3iloQbWzM4OzI7MjU1OzI1NTsy
+NTU7NDg7Mjs2MTsxMDU7MTk5beKWmBtbMzg7MjswOzc5OzIyMDs0OW3ilpgbWzQ5bSAbWzQ5bSAg
+G1swbQobWzQ5bSAgICAgG1szODsyOzA7ODg7MjQ4OzQ5beKWnRtbMzg7MjswOzM5OzExMDs0OW3i
+loAbWzM4OzI7MDs0NDsxMjU7NDlt4paAG1szODsyOzA7ODA7MjI1OzQ5beKWmBtbMzg7MjswOzkx
+OzI1NTs0OW3ilp0bWzQ5bSAbWzQ5bSAbWzQ5bSAgICAbWzBtChtbNDltICAgICAgICAgICAgICAg
+IBtbMG0K
+EOF
+base64 -d >"$figftemp" <<'EOF'
+G1szODsyOzIzMDsxNDI7MTFt4paIG1szOW0bWzM4OzI7MjMyOzEzODsxM23iloAbWzM5bRtbMzg7
+MjsyMzQ7MTMzOzE1beKWhBtbMzltG1szODsyOzIzNzsxMjk7MTdt4oCBG1szOW0bWzM4OzI7MjM5
+OzEyNTsxOW3ilogbWzM5bRtbMzg7MjsyNDE7MTIxOzIxbeKWgBtbMzltG1szODsyOzI0MzsxMTc7
+MjNt4paAG1szOW0bWzM4OzI7MjQ0OzExMjsyNm3igIEbWzM5bRtbMzg7MjsyNDY7MTA4OzI4beKW
+iBtbMzltG1szODsyOzI0NzsxMDQ7MzFtIBtbMzltG1szODsyOzI0OTsxMDA7MzRt4paIG1szOW0b
+WzM4OzI7MjUwOzk2OzM3beKAgRtbMzltG1szODsyOzI1MTs5Mjs0MG3iloQbWzM5bRtbMzg7Mjsy
+NTI7ODg7NDNt4paEG1szOW0bWzM4OzI7MjUzOzg0OzQ2beKAgRtbMzltG1szODsyOzI1Mzs4MDs1
+MG3ilogbWzM5bRtbMzg7MjsyNTQ7NzY7NTNtIBtbMzltG1szODsyOzI1NDs3Mjs1Nm3ilogbWzM5
+bRtbMzg7MjsyNTQ7Njg7NjBt4oCBG1szOW0bWzM4OzI7MjU0OzY0OzY0beKWiBtbMzltG1szODsy
+OzI1NDs2MTs2N23iloQbWzM5bRtbMzg7MjsyNTQ7NTc7NzFtIBtbMzltG1szODsyOzI1NDs1NDs3
+NW3ilogbWzM5bRtbMzg7MjsyNTM7NTA7Nzlt4oCBG1szOW0bWzM4OzI7MjUzOzQ3OzgzbeKWiBtb
+MzltG1szODsyOzI1Mjs0NDs4N23iloAbWzM5bRtbMzg7MjsyNTE7NDE7OTFt4oCBG1szOW0bWzM4
+OzI7MjUwOzM4Ozk1beKWgBtbMzltG1szODsyOzI0OTszNTs5OW3ilogbWzM5bRtbMzg7MjsyNDg7
+MzI7MTAzbeKWgBtbMzltG1szODsyOzI0NjsyOTsxMDdt4oCBG1szOW0bWzM4OzI7MjQ1OzI2OzEx
+MW3ilogbWzM5bRtbMzg7MjsyNDM7MjQ7MTE2beKWgBtbMzltG1szODsyOzI0MTsyMjsxMjBt4paI
+G1szOW0bWzM4OzI7MjM5OzE5OzEyNG3igIEbWzM5bRtbMzg7MjsyMzc7MTc7MTI4beKWiBtbMzlt
+G1szODsyOzIzNTsxNTsxMzJt4paAG1szOW0bWzM4OzI7MjMzOzEzOzEzN23ilogbWzM5bRtbMzg7
+MjsyMzA7MTE7MTQxbeKAgRtbMzltG1szODsyOzIyODsxMDsxNDVtG1szOW0KG1szODsyOzIzNzsx
+Mjk7MTdt4paIG1szOW0bWzM4OzI7MjM5OzEyNTsxOW3iloQbWzM5bRtbMzg7MjsyNDE7MTIxOzIx
+beKWgBtbMzltG1szODsyOzI0MzsxMTc7MjNt4oCBG1szOW0bWzM4OzI7MjQ0OzExMjsyNm3ilogb
+WzM5bRtbMzg7MjsyNDY7MTA4OzI4beKWiBtbMzltG1szODsyOzI0NzsxMDQ7MzFt4paEG1szOW0b
+WzM4OzI7MjQ5OzEwMDszNG3igIEbWzM5bRtbMzg7MjsyNTA7OTY7Mzdt4paAG1szOW0bWzM4OzI7
+MjUxOzkyOzQwbeKWhBtbMzltG1szODsyOzI1Mjs4ODs0M23iloAbWzM5bRtbMzg7MjsyNTM7ODQ7
+NDZt4oCBG1szOW0bWzM4OzI7MjUzOzgwOzUwbeKAgRtbMzltG1szODsyOzI1NDs3Njs1M23igIEb
+WzM5bRtbMzg7MjsyNTQ7NzI7NTZt4oCBG1szOW0bWzM4OzI7MjU0OzY4OzYwbeKWiBtbMzltG1sz
+ODsyOzI1NDs2NDs2NG3iloQbWzM5bRtbMzg7MjsyNTQ7NjE7Njdt4paIG1szOW0bWzM4OzI7MjU0
+OzU3OzcxbeKAgRtbMzltG1szODsyOzI1NDs1NDs3NW3ilogbWzM5bRtbMzg7MjsyNTM7NTA7Nzlt
+IBtbMzltG1szODsyOzI1Mzs0Nzs4M23iloAbWzM5bRtbMzg7MjsyNTI7NDQ7ODdt4paIG1szOW0b
+WzM4OzI7MjUxOzQxOzkxbeKAgRtbMzltG1szODsyOzI1MDszODs5NW3iloQbWzM5bRtbMzg7Mjsy
+NDk7MzU7OTlt4paIG1szOW0bWzM4OzI7MjQ4OzMyOzEwM23igIEbWzM5bRtbMzg7MjsyNDY7Mjk7
+MTA3bSAbWzM5bRtbMzg7MjsyNDU7MjY7MTExbeKWiBtbMzltG1szODsyOzI0MzsyNDsxMTZt4oCB
+G1szOW0bWzM4OzI7MjQxOzIyOzEyMG3igIEbWzM5bRtbMzg7MjsyMzk7MTk7MTI0beKWiBtbMzlt
+G1szODsyOzIzNzsxNzsxMjht4paEG1szOW0bWzM4OzI7MjM1OzE1OzEzMm3ilogbWzM5bRtbMzg7
+MjsyMzM7MTM7MTM3beKAgRtbMzltG1szODsyOzIzMDsxMTsxNDFt4paIG1szOW0bWzM4OzI7MjI4
+OzEwOzE0NW3iloAbWzM5bRtbMzg7MjsyMjU7ODsxNDlt4paAG1szOW0bWzM4OzI7MjIyOzc7MTUz
+beKAgRtbMzltG1szODsyOzIxOTs2OzE1OG0bWzM5bQo=
+
+EOF
+echo -e "\e[32mSetup Script \e[33m3.0\e[0m" > "$version"
+# ${1}=figlet, ${2}=logo
+banner() {
+  HIDECURSOR
+  clear
+  echo -e "\033[35;1m"
+  PUT 0 0
+  echo "┌$(seq -s─ $((term_width - 1)) | tr -d '[:digit:]')┐"
+  for ((i = 1; i <= 8; i++)); do
+    echo "│$(seq -s\  $((term_width - 1)) | tr -d '[:digit:]')│"
+  done
+  echo "└$(seq -s─ $((term_width - 1)) | tr -d '[:digit:]')┘"
+  PUT 5 0
+  # print_prefixed_file "${1}"
+  if (( term_width > 59 )); then
+    align_output "$figftemp" "$term_width" right
+    PUT 2 0
+    # print_center_file "${2}"
+    align_output "$logotemp" "$term_width" left
+    PUT 9 0
+    align_output "$version" "$term_width" lvers
+  else
+    align_output "$figftemp" "$term_width" center
+    PUT 9 0
+    align_output "$version" "$term_width" lvers
+  fi
+  PUT 1 0
+  echo -e "\033[35;1m"
+  for ((i = 1; i <= 8; i++)); do
+    echo "│"
+  done
+  PUT 10 0
+  echo
+  NORM
+}
+
+align_output() {
+  local file="$1"   # content file
+  local canvas="$2" # terminal width (stty size)
+  local align="$3"  # 0=left, 1=center, 2=right
+
+  # Internal ANSI stripper
+  strip_ansi() { sed "s/\x1B\[[0-9;]*[mGK]//g"; }
+
+  while IFS= read -r line; do
+    local clean_line=$(echo "$line" | strip_ansi)
+    local line_length=${#clean_line}
+    local pad=0
+
+    case "$align" in
+      center) pad=$(((canvas - line_length) / 2)) ;; # center
+      right) pad=$((canvas - line_length - 7)) ;;    # right
+      lvers) pad=$((canvas - line_length - 3)) ;;
+      *) pad=3 ;; # left
+    esac
+
+    [ $pad -lt 0 ] && pad=0
+    printf "%*s%s\n" "$pad" "" "$line"
+  done <"$file"
+}
