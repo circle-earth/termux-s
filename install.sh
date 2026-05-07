@@ -335,9 +335,23 @@ setup_theader() {
   fi
   create_custom_theme
   change_zsh_theme "unstop"
-  cp $SCRIPT_DIR/dotfile/.* $HOME/
-  printf "HISTSIZE=100000\nSAVEHIST=100000\nexport USER=\$(whoami)\nbanner >> \"\${user}\"\ncat \"\${user}\"" >>"$HOME/.zshrc"
-  printf "\n# profile source\nsource \"\$HOME/.profile\"" >> "$HOME/.zprofile" 
+  cp "$SCRIPT_DIR"/dotfile/.* "$HOME"/
+
+  if ! grep -q 'source "$HOME/.profile"' "$HOME/.zshrc" 2>/dev/null; then
+    cat >>"$HOME/.zshrc" <<'EOF'
+
+HISTSIZE=100000
+SAVEHIST=100000
+export USER=$(whoami)
+source "$HOME/.profile"
+banner >> "${user}"
+cat "${user}"
+EOF
+  fi
+
+  if ! grep -q 'source "$HOME/.profile"' "$HOME/.zprofile" 2>/dev/null; then
+    printf '\n# profile source\nsource "$HOME/.profile"\n' >>"$HOME/.zprofile"
+  fi
   mkdir -p "$theader_dir"
   for d in bin logo tpt lib theader.cfg; do
     if [[ -e "$SCRIPT_DIR/$d" ]]; then
