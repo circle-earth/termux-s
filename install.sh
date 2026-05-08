@@ -359,13 +359,22 @@ EOF
 # theader aliases start
 source "$HOME/.profile"
 if command -v logo-ls >/dev/null 2>&1; then
-  unalias l ls l. la ll ll. 2>/dev/null
+  unalias l ls l. la ll ll. lsg lag llg ils ila ill ilsg ilag illg 2>/dev/null
   alias l='logo-ls'
   alias ls='logo-ls'
   alias l.='logo-ls -d .*'
   alias la='logo-ls -A'
   alias ll='logo-ls -al'
   alias ll.='logo-ls -ald .*'
+  alias lsg='logo-ls -D'
+  alias lag='logo-ls -AD'
+  alias llg='logo-ls -alD'
+  alias ils='logo-ls'
+  alias ila='logo-ls -A'
+  alias ill='logo-ls -al'
+  alias ilsg='logo-ls -D'
+  alias ilag='logo-ls -AD'
+  alias illg='logo-ls -alD'
 fi
 # theader aliases end
 EOF
