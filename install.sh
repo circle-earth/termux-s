@@ -105,18 +105,25 @@ fi
   nerdflink="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/UbuntuMono.zip"
   FONT_DIR="$HOME/.termux"
   mkdir -p "$FONT_DIR"
-  TMPDIR=$(mktemp -d)
 
-  echo "[➕] Downloading Nerd Font (UbuntuMono)..."
-  curl -L "$nerdflink" -o "$TMPDIR/UbuntuMono.zip"
+  if [[ -f "$FONT_DIR/font.ttf" ]]; then
+    echo "[✔] Nerd Font already installed at $FONT_DIR/font.ttf"
+  else
+    TMPDIR=$(mktemp -d)
 
-  echo "[🎨] Installing Nerd Font to $FONT_DIR/font.ttf ..."
-  unzip -p "$TMPDIR/UbuntuMono.zip" "UbuntuMonoNerdFontMono-Regular.ttf" >"$FONT_DIR/font.ttf"
+    echo "[➕] Downloading Nerd Font (UbuntuMono)..."
+    curl -L "$nerdflink" -o "$TMPDIR/UbuntuMono.zip"
 
-  rm -rf "$TMPDIR"
+    echo "[🎨] Installing Nerd Font to $FONT_DIR/font.ttf ..."
+    unzip -p "$TMPDIR/UbuntuMono.zip" "UbuntuMonoNerdFontMono-Regular.ttf" >"$FONT_DIR/font.ttf"
 
-  echo "[✔] Nerd Font installed at $FONT_DIR/font.ttf"
-  echo "[ℹ] Restart Termux app to apply new font."# Demo text with lolcat if available
+    rm -rf "$TMPDIR"
+
+    echo "[✔] Nerd Font installed at $FONT_DIR/font.ttf"
+    echo "[ℹ] Restart Termux app to apply new font."
+  fi
+
+  # Demo text with lolcat if available
   echo -e "\n[🎨] Demo text:\n"
   if command -v lolcat >/dev/null 2>&1; then
     echo "Installed!" | figlet -f pixelfont | lolcat
