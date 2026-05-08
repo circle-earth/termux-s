@@ -12,7 +12,7 @@ Transform your Termux shell into a personalized, aesthetic command center with *
 - 🧠 **Smart ZSH Setup**: Oh-My-Zsh integration with plugin manager and theme selector.
 - 🧩 **Interactive Menus**: Powered by `fzf` and `gum` for intuitive selection.
 - 🛠️ **One-Tap Setup**: Install all dependencies and configure your shell in minutes.
-- 🧾 **Aliases & Enhancements**: Modern replacements for `ls`, `cat`, and more using `logo-ls` and `bat`.
+- 🧾 **Aliases & Enhancements**: Theme-aware replacements for `ls`, `cat`, and more using `logo-ls`, `lsd`, `eza`, and `bat`.
 
 ## Preview of after setup completed..
 ![Project Banner](doc/tbanner.jpg)
@@ -24,7 +24,7 @@ Transform your Termux shell into a personalized, aesthetic command center with *
 Make sure the following packages are installed:
 
 ```bash
-pkg install curl fd figlet ruby boxes gum bat logo-ls zsh timg fzf
+pkg install curl fd figlet ruby boxes gum bat logo-ls lsd eza zsh timg fzf
 gem install lolcat
 ```
 
@@ -35,7 +35,8 @@ gem install lolcat
 3. `cd Termux/`
 4. `ls`
 5. `bash install.sh`
-6. after complete all processing just --open new session-- or `source ~/.zshrc`
+6. Choose `Quick Install` for automatic setup, or `Manual Install` for step-by-step setup.
+7. After complete all processing just --open new session-- or `source ~/.zshrc`
 
 This script will:
 

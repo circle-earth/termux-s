@@ -35,7 +35,7 @@ conf() {
 
 install_packages() {
   # package list
-  packages=(curl fd figlet ruby boxes gum bat logo-ls zsh timg)
+  packages=(curl fd figlet ruby boxes gum bat logo-ls lsd eza zsh timg)
 
   echo -e "\n[🔧] Installing required packages...\n"
 
@@ -128,6 +128,26 @@ fi
 }
 
 # Run function
+quick_install() {
+  echo -e "\033[1;32m[✔] Starting quick install...\033[0m"
+  install_packages
+
+  if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+    echo -e "\033[1;32m[✔] Installing Oh-my-zsh...\033[0m"
+    install_oh_my_zsh
+  else
+    echo -e "\033[1;32m[✔] Oh-my-zsh already installed\033[0m"
+  fi
+
+  if command -v zsh >/dev/null 2>&1; then
+    chsh -s zsh
+  fi
+
+  echo -e "\033[1;36m[ℹ] Running Theader setup...\033[0m"
+  setup_theader
+  echo -e "\033[1;32m[✔] Quick install complete. Restart Termux or run: zsh\033[0m"
+}
+
 menu_main() {
 
   while true; do
@@ -136,18 +156,17 @@ menu_main() {
     cat "${user}"
     echo ""
     choice=$(
-      printf "1. Install packages\n2. Setup\n3. Exit" |
+      printf "1. Quick Install\n2. Manual Install\n3. Exit" |
         fzf --prompt="Use ↑/↓ to navigate, Enter to select: " --exit-0
     )
 
     case $choice in
-      "1. Install packages")
-        echo -e "\033[1;32m[✔] Installing packages...\033[0m"
-        install_packages
+      "1. Quick Install")
+        quick_install
         sleep 1
         ;;
-      "2. Setup")
-        menu_setup
+      "2. Manual Install")
+        menu_manual_install
         ;;
       "3. Exit")
         echo -e "\033[1;31m[✘] Exiting...\033[0m"
@@ -158,6 +177,27 @@ menu_main() {
         ;;
     esac
   done
+}
+
+menu_manual_install() {
+  choice=$(
+    printf "1. Install packages\n2. Setup\n3. Back" |
+      fzf --prompt="Manual Install ➤ " --exit-0
+  )
+
+  case $choice in
+    "1. Install packages")
+      echo -e "\033[1;32m[✔] Installing packages...\033[0m"
+      install_packages
+      sleep 1
+      ;;
+    "2. Setup")
+      menu_setup
+      ;;
+    "3. Back")
+      return
+      ;;
+  esac
 }
 
 menu_setup() {
@@ -358,23 +398,74 @@ EOF
 
 # theader aliases start
 source "$HOME/.profile"
-if command -v logo-ls >/dev/null 2>&1; then
-  unalias l ls l. la ll ll. lsg lag llg ils ila ill ilsg ilag illg 2>/dev/null
-  alias l='logo-ls'
-  alias ls='logo-ls'
-  alias l.='logo-ls -d .*'
-  alias la='logo-ls -A'
-  alias ll='logo-ls -al'
-  alias ll.='logo-ls -ald .*'
-  alias lsg='logo-ls -D'
-  alias lag='logo-ls -AD'
-  alias llg='logo-ls -alD'
-  alias ils='logo-ls'
-  alias ila='logo-ls -A'
-  alias ill='logo-ls -al'
-  alias ilsg='logo-ls -D'
-  alias ilag='logo-ls -AD'
-  alias illg='logo-ls -alD'
+unalias l ls l. la ll ll. lsg lag llg ils ila ill ilsg ilag illg 2>/dev/null
+
+case "${ZSH_THEME:-}" in
+  unstop)
+    if command -v logo-ls >/dev/null 2>&1; then
+      alias l='logo-ls'
+      alias ls='logo-ls'
+      alias l.='logo-ls -d .*'
+      alias la='logo-ls -A'
+      alias ll='logo-ls -al'
+      alias ll.='logo-ls -ald .*'
+      alias lsg='logo-ls -D'
+      alias lag='logo-ls -AD'
+      alias llg='logo-ls -alD'
+      alias ils='logo-ls'
+      alias ila='logo-ls -A'
+      alias ill='logo-ls -al'
+      alias ilsg='logo-ls -D'
+      alias ilag='logo-ls -AD'
+      alias illg='logo-ls -alD'
+    fi
+    ;;
+  robbyrussell|rubbyrossel|rubyrossel)
+    if command -v eza >/dev/null 2>&1; then
+      alias l='eza --icons=always --group-directories-first'
+      alias ls='eza --icons=always --group-directories-first'
+      alias l.='eza -d .* --icons=always --group-directories-first'
+      alias la='eza -A --icons=always --group-directories-first'
+      alias ll='eza -al --icons=always --group-directories-first --git'
+      alias ll.='eza -ald .* --icons=always --group-directories-first --git'
+      alias lsg='eza --tree --level=2 --icons=always --group-directories-first'
+      alias lag='eza -A --tree --level=2 --icons=always --group-directories-first'
+      alias llg='eza -al --tree --level=2 --icons=always --group-directories-first --git'
+      alias ils='eza --icons=always --group-directories-first'
+      alias ila='eza -A --icons=always --group-directories-first'
+      alias ill='eza -al --icons=always --group-directories-first --git'
+      alias ilsg='eza --tree --level=2 --icons=always --group-directories-first'
+      alias ilag='eza -A --tree --level=2 --icons=always --group-directories-first'
+      alias illg='eza -al --tree --level=2 --icons=always --group-directories-first --git'
+    fi
+    ;;
+esac
+
+if ! alias ls >/dev/null 2>&1; then
+  if command -v lsd >/dev/null 2>&1; then
+    alias l='lsd'
+    alias ls='lsd'
+    alias l.='lsd -d .*'
+    alias la='lsd -A'
+    alias ll='lsd -al'
+    alias ll.='lsd -ald .*'
+    alias lsg='lsd --tree'
+    alias lag='lsd -A --tree'
+    alias llg='lsd -al --tree'
+    alias ils='lsd'
+    alias ila='lsd -A'
+    alias ill='lsd -al'
+    alias ilsg='lsd --tree'
+    alias ilag='lsd -A --tree'
+    alias illg='lsd -al --tree'
+  else
+    alias l='ls --color=auto'
+    alias ls='ls --color=auto'
+    alias l.='ls --color=auto -d .*'
+    alias la='ls --color=auto -A'
+    alias ll='ls --color=auto -al'
+    alias ll.='ls --color=auto -ald .*'
+  fi
 fi
 # theader aliases end
 EOF
