@@ -553,6 +553,32 @@ ln -sfr "$TOOL_DST" "$PREFIX/bin/cak"
 # refresh shell command cache
 hash -r 2>/dev/null || true
 }
+
+remove_theader() {
+  local theader_dir="$HOME/.config/theader"
+  local zshrc="${ZSHRC:-$HOME/.zshrc}"
+  local zprofile="$HOME/.zprofile"
+  local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+  if [[ -f "$zshrc" ]]; then
+    sed -i '/# theader aliases start/,/# theader aliases end/d' "$zshrc" 2>/dev/null || true
+
+    if grep -q '^ZSH_THEME="unstop"$' "$zshrc" 2>/dev/null; then
+      sed -i 's/^ZSH_THEME="unstop"$/ZSH_THEME="robbyrussell"/' "$zshrc"
+    fi
+  fi
+
+  if [[ -f "$zprofile" ]]; then
+    sed -i '/# profile source/,+1d' "$zprofile" 2>/dev/null || true
+  fi
+
+  rm -rf "$theader_dir"
+  rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
+  rm -f "$zsh_custom/themes/unstop.zsh-theme"
+
+  hash -r 2>/dev/null || true
+  echo "Theader removed successfully ✅"
+}
 # packages list must above 2000
 if ((pkgsize < 2000)); then
   echo -ne "\033[31m\r[*] \033[4;32mPackage Update and Upgrade or change repo \e[0m\n"
