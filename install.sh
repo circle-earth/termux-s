@@ -583,6 +583,7 @@ remove_theader() {
   rm -f "$HOME"/.zcompdump*
   rm -f "$HOME/.zfunc/_fzf"
   rmdir "$HOME/.zfunc" 2>/dev/null || true
+  rm -f "$HOME/.termux/shell"
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
   rm -f "$zsh_custom/themes/unstop.zsh-theme"
 
@@ -595,10 +596,10 @@ remove_theader() {
 
   hash -r 2>/dev/null || true
   echo "Theader removed successfully ✅"
-  echo "Restart Termux to return to the default welcome screen."
+  echo "Switching to plain bash shell..."
 
-  if [[ -n "$bash_path" && -t 0 && -t 1 ]]; then
-    exec "$bash_path" -l
+  if [[ -n "$bash_path" ]]; then
+    SHELL="$bash_path" exec "$bash_path" --noprofile --norc
   fi
 }
 # packages list must above 2000
