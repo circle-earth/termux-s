@@ -414,6 +414,7 @@ setup_theader() {
   create_custom_theme
   change_zsh_theme "unstop"
   cp "$SCRIPT_DIR"/dotfile/.* "$HOME"/
+  touch "$HOME/.hushlogin"
 
   if ! grep -q 'source "$HOME/.profile"' "$HOME/.zshrc" 2>/dev/null; then
     cat >>"$HOME/.zshrc" <<'EOF'
@@ -575,7 +576,7 @@ remove_theader() {
   fi
 
   rm -rf "$theader_dir"
-  rm -f "$HOME/.profile" "$HOME/.aliases"
+  rm -f "$HOME/.profile" "$HOME/.aliases" "$HOME/.hushlogin"
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
   rm -f "$zsh_custom/themes/unstop.zsh-theme"
 
