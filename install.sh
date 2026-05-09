@@ -383,7 +383,11 @@ setup_theader() {
     line_count=$(wc -l <"$ZSHRC")
     line_104=$(sed -n '104p' "$ZSHRC")
 
-    if [ "$line_count" -gt 104 ] && [[ "$line_104" != *"oh-my-zsh"* ]]; then
+    if grep -q '# theader removed simple prompt start' "$ZSHRC" 2>/dev/null; then
+      cp "$TEMPLATE" "$ZSHRC"
+      sed -i 's/plugins=(git)/plugins=()/' "$ZSHRC"
+      echo "✅ Oh-my-zsh .zshrc restored"
+    elif [ "$line_count" -gt 104 ] && [[ "$line_104" != *"oh-my-zsh"* ]]; then
       echo "⚠️  .zshrc has $line_count lines and line 104 lacks 'oh-my-zsh', creating backup..."
       cp "$ZSHRC" "$ZSHRC.backup.$(date +%Y%m%d%H%M%S)"
 
@@ -581,8 +585,10 @@ remove_theader() {
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
 
   cat >"$HOME/.zshrc" <<'EOF'
+# theader removed simple prompt start
 PROMPT='%~ $ '
 RPROMPT=''
+# theader removed simple prompt end
 EOF
 
   hash -r 2>/dev/null || true
