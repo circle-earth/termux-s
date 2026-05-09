@@ -33,12 +33,12 @@ run_cmd() {
 
 # === 1) Symlink dispatch (clogo, ctitle, …) ===
 cmd="$(basename "$0")"
-if [[ "$cmd" != "theader" && -n "${CMD_FUNC[$cmd]:-}" ]]; then
+if [[ "$cmd" != "theader" && "$cmd" != "unstop" && -n "${CMD_FUNC[$cmd]:-}" ]]; then
   run_cmd "$cmd" "$@"
   exit 0
 fi
 
-# === 2) Subcommand syntax: theader <cmd> [args...] ===
+# === 2) Subcommand syntax: theader/unstop <cmd> [args...] ===
 if [[ $# -gt 0 && -n "${CMD_FUNC[$1]:-}" ]]; then
   sub="$1"; shift
   run_cmd "$sub" "$@"
@@ -72,7 +72,7 @@ if command -v gum >/dev/null 2>&1; then
 
   # Header + separator
   gum style --foreground="$HEADER_COLOR" --align=center --border=none \
-    "theader • choose a command"
+    "unstop • choose a command"
   gum style --foreground="$SEPARATOR_COLOR" --border=none "$sep"
 
   # Build menu dynamically
@@ -103,6 +103,6 @@ if command -v gum >/dev/null 2>&1; then
 
   run_cmd "$choice_cmd"
 else
-  echo "gum not installed. Usage: theader [clogo|ctitle|ctpro|cztheme]" >&2
+  echo "gum not installed. Usage: unstop [clogo|ctitle|ctpro|cztheme]" >&2
   exit 1
 fi

@@ -522,7 +522,7 @@ EOF
   fi
   if [[ -f $theader_dir/bin/theader ]]; then
     install -Dm700 $theader_dir/bin/theader "$PREFIX"/bin/theader
-    for i in clogo ctitle ctpro cztheme; do
+    for i in unstop clogo ctitle ctpro cztheme; do
       ln -sfr "$PREFIX"/bin/theader "$PREFIX"/bin/$i
     done
     echo "theader installed successfully ✅"
@@ -578,7 +578,7 @@ remove_theader() {
   rm -f "$HOME/.profile" "$HOME/.aliases" "$HOME/.hushlogin"
   rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zshenv"
   rm -f "$HOME/.termux/shell"
-  rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
+  rm -f "$PREFIX/bin/theader" "$PREFIX/bin/unstop" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
 
   cat >"$HOME/.zshrc" <<'EOF'
 # theader removed simple prompt start
