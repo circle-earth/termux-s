@@ -318,59 +318,61 @@ menu_zsh_setup() {
 menu_theader_setup() {
   local theader_dir="$HOME/.config/theader"
 
-  # Check if Theader is installed (directory exists)
-  if [[ ! -d "$theader_dir" ]]; then
-    # Not installed → only show setup option
-    local subchoice
-    subchoice=$(
-      printf "1. Setup Theader\n2. Back" |
-        fzf --prompt="Theader Setup ➤ " --ansi --exit-0
-    )
-    case $subchoice in
-      "1. Setup Theader")
-        echo -e "\033[1;32m[✔] Setting up Theader...\033[0m"
-        setup_theader
-        ;;
-      "2. Back"|"")
-        return
-        ;;
-    esac
-  else
-    # Already installed → show options
-    local main_options="1. Change Logo\n2. Change Title\n3. Change Keyboard\n4. Change ZSH Theme\n5. Remove Theader\n6. Back"
+  while true; do
+    # Check if Theader is installed (directory exists)
+    if [[ ! -d "$theader_dir" ]]; then
+      # Not installed → only show setup option
+      local subchoice
+      subchoice=$(
+        printf "1. Setup Theader\n2. Back" |
+          fzf --prompt="Theader Setup ➤ " --ansi --exit-0
+      )
+      case $subchoice in
+        "1. Setup Theader")
+          echo -e "\033[1;32m[✔] Setting up Theader...\033[0m"
+          setup_theader
+          ;;
+        "2. Back"|"")
+          return
+          ;;
+      esac
+    else
+      # Already installed → show options
+      local main_options="1. Change Logo\n2. Change Title\n3. Change Keyboard\n4. Change ZSH Theme\n5. Remove Theader\n6. Back"
 
-    local subchoice
-    subchoice=$(
-      printf "%b" "$main_options" |
-        fzf --prompt="Theader Options ➤ " --ansi --exit-0
-    )
+      local subchoice
+      subchoice=$(
+        printf "%b" "$main_options" |
+          fzf --prompt="Theader Options ➤ " --ansi --exit-0
+      )
 
-    case $subchoice in
-      "1. Change Logo")
-        echo -e "\033[1;34m[ℹ] Changing Logo...\033[0m"
-        c_logo
-        ;;
-      "2. Change Title")
-        echo -e "\033[1;34m[ℹ] Changing Title...\033[0m"
-        type_title
-        ;;
-      "3. Change Keyboard")
-        echo -e "\033[1;34m[ℹ] Changing Keyboard Layout...\033[0m"
-        key_properties
-        ;;
-      "4. Change ZSH Theme")
-        echo -e "\033[1;34m[ℹ] Changing ZSH Theme...\033[0m"
-        c_theme
-        ;;
-      "5. Remove Theader")
-        echo -e "\033[1;31m[⚠] Removing Theader...\033[0m"
-        remove_theader
-        ;;
-      "6. Back"|"")
-        return
-        ;;
-    esac
-  fi
+      case $subchoice in
+        "1. Change Logo")
+          echo -e "\033[1;34m[ℹ] Changing Logo...\033[0m"
+          c_logo
+          ;;
+        "2. Change Title")
+          echo -e "\033[1;34m[ℹ] Changing Title...\033[0m"
+          type_title
+          ;;
+        "3. Change Keyboard")
+          echo -e "\033[1;34m[ℹ] Changing Keyboard Layout...\033[0m"
+          key_properties
+          ;;
+        "4. Change ZSH Theme")
+          echo -e "\033[1;34m[ℹ] Changing ZSH Theme...\033[0m"
+          c_theme
+          ;;
+        "5. Remove Theader")
+          echo -e "\033[1;31m[⚠] Removing Theader...\033[0m"
+          remove_theader
+          ;;
+        "6. Back"|"")
+          return
+          ;;
+      esac
+    fi
+  done
 }
 # theader setup function
 setup_theader() {

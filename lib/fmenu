@@ -58,10 +58,9 @@ EOF
 
   # ====== Run fzf for live title input ======
   title_result=$(
-    printf "\n" | fzf \
+    printf "0. Back\n%s\n" "$current_title" | fzf \
       --prompt="Type Title ▶ " \
       --exit-0 \
-      --query="$current_title" \
       --print-query \
       --border \
       --margin=1,5% \
@@ -71,10 +70,12 @@ EOF
   )
 
   # ====== Extract typed title ======
-  title=$(echo "$title_result" | head -n1)
+  typed_title=$(echo "$title_result" | head -n1)
+  selected_title=$(echo "$title_result" | sed -n '2p')
+  [[ "$selected_title" == "0. Back" ]] && return
+  title="${typed_title:-$selected_title}"
   if [[ -z "$title" ]]; then
-    echo "No title entered. Exiting."
-    exit 0
+    return
   fi
 
   # ====== Save to config ======
@@ -113,10 +114,10 @@ function c_logo() {
   mapfile -t files < <(find "$DIR" -maxdepth 1 -type f | sort)
   if [ ${#files[@]} -eq 0 ]; then
     echo "No logo files found in $DIR"
-    exit 0
+    return
   fi
 
-  options=()
+  options=("0. Back")
   idx=1
   for f in "${files[@]}"; do
     name=$(basename "$f")
@@ -141,21 +142,22 @@ function c_logo() {
         --no-scrollbar \
         --preview 'bash -c "
             FILE=\$(echo {} | sed \"s/^[0-9]\+[.] //; s/ .*//\");
+            [ \"\$FILE\" = \"Back\" ] && exit 0;
             cat \"$FZF_PREVIEW_DIR/\$FILE\" 2>/dev/null || file \"$FZF_PREVIEW_DIR/\$FILE\"
         "' \
         --preview-window=right:40%:wrap
   )
 
   if [[ -z "$choice" ]]; then
-    echo "No logo selected. Exiting."
-    exit 0
+    return
   fi
+  [[ "$choice" == "0. Back" ]] && return
 
   choice_clean=$(echo "$choice" | sed 's/^[0-9]\+[.] //' | sed 's/ .*//')
 
   # ====== Step 2: Indent Selection ======
   indent_opts=(2 3 4 5 6)
-  indent_choices=()
+  indent_choices=("0. Back")
   for val in "${indent_opts[@]}"; do
     if [[ "$val" == "$current_indent" ]]; then
       indent_choices+=("$val $green_star")
@@ -177,7 +179,9 @@ function c_logo() {
   )
 
   if [[ -z "$indent_choice" ]]; then
-    indent_choice="$current_indent"
+    return
+  elif [[ "$indent_choice" == "0. Back" ]]; then
+    return
   else
     indent_choice=$(echo "$indent_choice" | awk '{print $1}')
   fi
@@ -221,7 +225,7 @@ function key_properties() {
   green_star=$'\033[32m\033[0m'
 
   # ====== Collect available configs ======
-  options=()
+  options=("0. Back")
   i=1
   while IFS= read -r file; do
     filename=$(basename "$file")
@@ -240,7 +244,7 @@ function key_properties() {
       --margin 1,5% --height=40% --border \
       --ansi --no-info --reverse --no-scrollbar)
 
-  [[ -z "$choice" ]] && echo "No selection made. Exiting." && exit 0
+  [[ -z "$choice" || "$choice" == "0. Back" ]] && return
 
   # Strip number + star → just filename
   choice_clean="${choice#*. }"
@@ -282,7 +286,7 @@ function c_theme() {
       sort | while read -r file; do basename "$file" .zsh-theme; done
   )
 
-  options=()
+  options=("0. Back")
   i=1
   for theme in "${themes[@]}"; do
     if [[ "$theme" == "$current_theme" ]]; then
@@ -299,7 +303,7 @@ function c_theme() {
       --margin 1,5% --height=40% --border \
       --ansi --no-info --reverse --no-scrollbar)
 
-  [[ -z "$choice" ]] && echo "No selection made. Exiting." && return 1
+  [[ -z "$choice" || "$choice" == "0. Back" ]] && return
 
   # Strip numbering and star
   choice_clean="${choice#*. }"
