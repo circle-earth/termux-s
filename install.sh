@@ -559,7 +559,8 @@ remove_theader() {
   local theader_dir="$HOME/.config/theader"
   local zshrc="${ZSHRC:-$HOME/.zshrc}"
   local zprofile="$HOME/.zprofile"
-  local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+  local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
+  local zsh_custom="${ZSH_CUSTOM:-$zsh_dir/custom}"
 
   if [[ -f "$zshrc" ]]; then
     sed -i '/# theader aliases start/,/# theader aliases end/d' "$zshrc" 2>/dev/null || true
@@ -576,7 +577,12 @@ remove_theader() {
   fi
 
   rm -rf "$theader_dir"
+  rm -rf "$zsh_dir"
   rm -f "$HOME/.profile" "$HOME/.aliases" "$HOME/.hushlogin"
+  rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zshenv"
+  rm -f "$HOME"/.zcompdump*
+  rm -f "$HOME/.zfunc/_fzf"
+  rmdir "$HOME/.zfunc" 2>/dev/null || true
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
   rm -f "$zsh_custom/themes/unstop.zsh-theme"
 
