@@ -212,26 +212,7 @@ menu_manual_install() {
 }
 
 menu_setup() {
-  choice=$(
-    printf "1. Zsh\n2. Fish (coming soon)\n3. Back" |
-      sed 's/2\. Fish (coming soon)/2. Fish \x1b[31m(\x1b[33mcoming soon\x1b[31m)\x1b[0m/' |
-      fzf --prompt="Setup option ➤ " --ansi --exit-0
-  )
-
-  case $choice in
-    "1. Zsh")
-      menu_zsh_setup
-      # echo -e "\033[1;34m[ℹ] Setting up Zsh...\033[0m"
-      sleep 1
-      ;;
-    "2. Fish (coming soon)")
-      echo -e "\033[1;33m[⚠] Fish setup is coming soon!\033[0m"
-      sleep 1
-      ;;
-    "3. Back"|"")
-      return
-      ;;
-  esac
+  menu_zsh_setup
 }
 
 menu_zsh_setup() {
