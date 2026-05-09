@@ -211,7 +211,7 @@ menu_manual_install() {
 
 menu_setup() {
   choice=$(
-    printf "1. Zsh\n2. Fish (coming soon)" |
+    printf "1. Zsh\n2. Fish (coming soon)\n3. Back" |
       sed 's/2\. Fish (coming soon)/2. Fish \x1b[31m(\x1b[33mcoming soon\x1b[31m)\x1b[0m/' |
       fzf --prompt="Setup option ➤ " --ansi --exit-0
   )
@@ -226,6 +226,9 @@ menu_setup() {
       echo -e "\033[1;33m[⚠] Fish setup is coming soon!\033[0m"
       sleep 1
       ;;
+    "3. Back")
+      return
+      ;;
   esac
 }
 
@@ -235,7 +238,7 @@ menu_zsh_setup() {
     # Not installed → only show setup option
     local subchoice
     subchoice=$(
-      printf "1. Install Oh-my-zsh" |
+      printf "1. Install Oh-my-zsh\n2. Back" |
         fzf --prompt="Zsh Setup ➤ " --ansi --exit-0
     )
     case $subchoice in
@@ -244,10 +247,13 @@ menu_zsh_setup() {
         install_oh_my_zsh
         chsh -s zsh
         ;;
+      "2. Back")
+        return
+        ;;
     esac
   else
     # Already installed → show main options
-    local main_options="1. Oh-my-zsh (Plugins Manager)\n2. Theader setup"
+    local main_options="1. Oh-my-zsh (Plugins Manager)\n2. Theader setup\n3. Back"
 
     local subchoice
     subchoice=$(
@@ -265,6 +271,9 @@ menu_zsh_setup() {
         # Show remove option only if plugins exist
         if [[ -n "$plugin_line" ]]; then
           pm_options+="\n2. Remove Plugins"
+          pm_options+="\n3. Back"
+        else
+          pm_options+="\n2. Back"
         fi
 
         local pm_choice
@@ -282,12 +291,21 @@ menu_zsh_setup() {
             echo -e "\033[1;31m[⚠] Removing Zsh Plugins...\033[0m"
             remove_zsh_plugin
             ;;
+          "3. Back")
+            return
+            ;;
+          "2. Back")
+            return
+            ;;
         esac
         ;;
       "2. Theader setup")
         echo -e "\033[1;36m[ℹ] Running Theader setup...\033[0m"
         # Your Theader setup logic
         menu_theader_setup
+        ;;
+      "3. Back")
+        return
         ;;
     esac
   fi
@@ -302,7 +320,7 @@ menu_theader_setup() {
     # Not installed → only show setup option
     local subchoice
     subchoice=$(
-      printf "1. Setup Theader" |
+      printf "1. Setup Theader\n2. Back" |
         fzf --prompt="Theader Setup ➤ " --ansi --exit-0
     )
     case $subchoice in
@@ -310,10 +328,13 @@ menu_theader_setup() {
         echo -e "\033[1;32m[✔] Setting up Theader...\033[0m"
         setup_theader
         ;;
+      "2. Back")
+        return
+        ;;
     esac
   else
     # Already installed → show options
-    local main_options="1. Change Logo\n2. Change Title\n3. Change Keyboard\n4. Change ZSH Theme\n5. Remove Theader"
+    local main_options="1. Change Logo\n2. Change Title\n3. Change Keyboard\n4. Change ZSH Theme\n5. Remove Theader\n6. Back"
 
     local subchoice
     subchoice=$(
@@ -341,6 +362,9 @@ menu_theader_setup() {
       "5. Remove Theader")
         echo -e "\033[1;31m[⚠] Removing Theader...\033[0m"
         remove_theader
+        ;;
+      "6. Back")
+        return
         ;;
     esac
   fi
