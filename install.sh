@@ -581,11 +581,12 @@ remove_theader() {
   rm -f "$zsh_custom/themes/unstop.zsh-theme"
 
   if command -v bash >/dev/null 2>&1; then
-    chsh -s bash
+    chsh -s "$(command -v bash)"
   fi
 
   hash -r 2>/dev/null || true
   echo "Theader removed successfully ✅"
+  echo "Restart Termux to return to the default welcome screen."
 }
 # packages list must above 2000
 if ((pkgsize < 2000)); then
