@@ -109,7 +109,7 @@ fzf_add_plugin() {
       tr -d '()' | tr -s '[:space:]' '\n'
   )
 
-  local options=()
+  local options=("0. Back")
   local i=1
   for c in "${choices[@]}"; do
     local name
@@ -146,6 +146,11 @@ fzf_add_plugin() {
 
   # Process each selected line
   while IFS= read -r choice; do
+    if [[ "$choice" == "0. Back" ]]; then
+      echo "↩️  Back"
+      return
+    fi
+
     local selected="${choice#*. }" # strip numbering
     selected="${selected%% *}"     # strip possible star
 
@@ -175,7 +180,7 @@ remove_zsh_plugin() {
   done
 
   # Prepare numbered list safely (no trailing newline)
-  local numbered_list=""
+  local numbered_list="0. Back"$'\n'
   for i in "${!plugins_array[@]}"; do
     numbered_list+="$((i + 1)). ${plugins_array[i]}"
     [[ $i -lt $((${#plugins_array[@]} - 1)) ]] && numbered_list+=$'\n'
@@ -197,6 +202,11 @@ remove_zsh_plugin() {
   # Extract plugin names (strip numbers and dot)
   local selected_plugins=()
   while IFS= read -r line; do
+    if [[ "$line" == "0. Back" ]]; then
+      echo "↩️  Back"
+      return
+    fi
+
     [[ -n "$line" ]] && selected_plugins+=("$(echo "$line" | sed 's/^[0-9]\+\. //')")
   done <<<"$selection"
 
