@@ -61,6 +61,8 @@ add_gh_plugin() {
   local plugin_name
   plugin_name=$(basename "$repo")
 
+  mkdir -p "$ZSH_CUSTOM/plugins"
+
   if [ ! -d "$ZSH_CUSTOM/plugins/$plugin_name" ]; then
     git clone "https://github.com/$repo.git" "$ZSH_CUSTOM/plugins/$plugin_name"
     echo "✅ GitHub plugin '$repo' cloned"

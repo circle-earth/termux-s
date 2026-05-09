@@ -377,7 +377,22 @@ menu_theader_setup() {
 # theader setup function
 setup_theader() {
   theader_dir="$HOME/.config/theader"
+
+  if [[ ! -d "$ZSH" || ! -f "$ZSH/templates/zshrc.zsh-template" ]]; then
+    echo "⚠️ Oh-my-zsh files missing, reinstalling local cache..."
+    if [[ -d "$ZSH" && ! -f "$ZSH/templates/zshrc.zsh-template" ]]; then
+      mv "$ZSH" "$ZSH.broken.$(date +%Y%m%d%H%M%S)"
+    fi
+    install_oh_my_zsh
+  fi
+
   TEMPLATE="$ZSH/templates/zshrc.zsh-template"
+  if [[ ! -f "$TEMPLATE" ]]; then
+    echo "Error: Oh-my-zsh template not found at $TEMPLATE"
+    return 1
+  fi
+
+  mkdir -p "$ZSH_CUSTOM/themes" "$ZSH_CUSTOM/plugins"
 
   if [ -f "$ZSHRC" ]; then
     line_count=$(wc -l <"$ZSHRC")
