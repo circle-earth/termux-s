@@ -58,7 +58,7 @@ EOF
 
   # ====== Run fzf for live title input ======
   title_result=$(
-    printf "0. Back\n%s\n" "$current_title" | fzf \
+    printf "%s\n0. Back\n" "$current_title" | fzf \
       --prompt="Type Title ▶ " \
       --exit-0 \
       --print-query \
@@ -72,8 +72,13 @@ EOF
   # ====== Extract typed title ======
   typed_title=$(echo "$title_result" | head -n1)
   selected_title=$(echo "$title_result" | sed -n '2p')
-  [[ "$selected_title" == "0. Back" ]] && return
-  title="${typed_title:-$selected_title}"
+  if [[ -n "$typed_title" ]]; then
+    title="$typed_title"
+  elif [[ "$selected_title" == "0. Back" ]]; then
+    return
+  else
+    title="$selected_title"
+  fi
   if [[ -z "$title" ]]; then
     return
   fi
