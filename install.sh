@@ -415,18 +415,11 @@ setup_theader() {
   change_zsh_theme "unstop"
   cp "$SCRIPT_DIR"/dotfile/.* "$HOME"/
   touch "$HOME/.hushlogin"
-  sed -i '/# theader startup start/,/# theader startup end/d' "$HOME/.zshrc" 2>/dev/null || true
-  if grep -q '^cat "${user}"$' "$HOME/.zshrc" 2>/dev/null; then
-    sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$HOME/.zshrc" 2>/dev/null || true
-  fi
-  if grep -q '^THEADER_CACHE=' "$HOME/.zshrc" 2>/dev/null; then
-    sed -i '/^HISTSIZE=100000$/,/^fi$/d' "$HOME/.zshrc" 2>/dev/null || true
-  fi
+  sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$HOME/.zshrc" 2>/dev/null || true
 
   if ! grep -q 'THEADER_CACHE=' "$HOME/.zshrc" 2>/dev/null; then
     cat >>"$HOME/.zshrc" <<'EOF'
 
-# theader startup start
 HISTSIZE=100000
 SAVEHIST=100000
 export USER=$(whoami)
@@ -437,11 +430,9 @@ if [[ -f "$THEADER_CACHE" ]]; then
   cat "$THEADER_CACHE"
 else
   mkdir -p "$(dirname "$THEADER_CACHE")"
-  clear
   banner > "$THEADER_CACHE"
   cat "$THEADER_CACHE"
 fi
-# theader startup end
 EOF
   fi
 
@@ -537,10 +528,6 @@ EOF
   if [[ -f $SCRIPT_DIR/colors.properties ]]; then
     cp -r $SCRIPT_DIR/colors.properties $HOME/.termux/
   fi
-  if declare -F banner >/dev/null 2>&1; then
-    mkdir -p "$HOME/.cache/theader"
-    banner >"$HOME/.cache/theader/banner"
-  fi
   if [[ -f $theader_dir/bin/theader ]]; then
     install -Dm700 $theader_dir/bin/theader "$PREFIX"/bin/theader
     for i in clogo ctitle ctpro cztheme; do
@@ -584,14 +571,8 @@ remove_theader() {
 
   if [[ -f "$zshrc" ]]; then
     sed -i '/# theader aliases start/,/# theader aliases end/d' "$zshrc" 2>/dev/null || true
-    sed -i '/# theader startup start/,/# theader startup end/d' "$zshrc" 2>/dev/null || true
     sed -i '/# plain prompt after theader removal start/,/# plain prompt after theader removal end/d' "$zshrc" 2>/dev/null || true
-    if grep -q '^cat "${user}"$' "$zshrc" 2>/dev/null; then
-      sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$zshrc" 2>/dev/null || true
-    fi
-    if grep -q '^THEADER_CACHE=' "$zshrc" 2>/dev/null; then
-      sed -i '/^HISTSIZE=100000$/,/^fi$/d' "$zshrc" 2>/dev/null || true
-    fi
+    sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$zshrc" 2>/dev/null || true
 
     if grep -q '^ZSH_THEME="unstop"$' "$zshrc" 2>/dev/null; then
       sed -i '/^ZSH_THEME="unstop"$/d' "$zshrc"
