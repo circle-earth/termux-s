@@ -189,24 +189,26 @@ menu_main() {
 }
 
 menu_manual_install() {
-  choice=$(
-    printf "1. Install packages\n2. Setup\n3. Back" |
-      fzf --prompt="Manual Install ➤ " --exit-0
-  )
+  while true; do
+    choice=$(
+      printf "1. Install packages\n2. Setup\n3. Back" |
+        fzf --prompt="Manual Install ➤ " --exit-0
+    )
 
-  case $choice in
-    "1. Install packages")
-      echo -e "\033[1;32m[✔] Installing packages...\033[0m"
-      install_packages
-      sleep 1
-      ;;
-    "2. Setup")
-      menu_setup
-      ;;
-    "3. Back")
-      return
-      ;;
-  esac
+    case $choice in
+      "1. Install packages")
+        echo -e "\033[1;32m[✔] Installing packages...\033[0m"
+        install_packages
+        sleep 1
+        ;;
+      "2. Setup")
+        menu_setup
+        ;;
+      "3. Back"|"")
+        return
+        ;;
+    esac
+  done
 }
 
 menu_setup() {
@@ -226,7 +228,7 @@ menu_setup() {
       echo -e "\033[1;33m[⚠] Fish setup is coming soon!\033[0m"
       sleep 1
       ;;
-    "3. Back")
+    "3. Back"|"")
       return
       ;;
   esac
@@ -247,7 +249,7 @@ menu_zsh_setup() {
         install_oh_my_zsh
         chsh -s zsh
         ;;
-      "2. Back")
+      "2. Back"|"")
         return
         ;;
     esac
@@ -291,10 +293,7 @@ menu_zsh_setup() {
             echo -e "\033[1;31m[⚠] Removing Zsh Plugins...\033[0m"
             remove_zsh_plugin
             ;;
-          "3. Back")
-            return
-            ;;
-          "2. Back")
+          "3. Back"|"2. Back"|"")
             return
             ;;
         esac
@@ -304,7 +303,7 @@ menu_zsh_setup() {
         # Your Theader setup logic
         menu_theader_setup
         ;;
-      "3. Back")
+      "3. Back"|"")
         return
         ;;
     esac
@@ -328,7 +327,7 @@ menu_theader_setup() {
         echo -e "\033[1;32m[✔] Setting up Theader...\033[0m"
         setup_theader
         ;;
-      "2. Back")
+      "2. Back"|"")
         return
         ;;
     esac
@@ -363,7 +362,7 @@ menu_theader_setup() {
         echo -e "\033[1;31m[⚠] Removing Theader...\033[0m"
         remove_theader
         ;;
-      "6. Back")
+      "6. Back"|"")
         return
         ;;
     esac
