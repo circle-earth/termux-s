@@ -562,10 +562,21 @@ remove_theader() {
 
   if [[ -f "$zshrc" ]]; then
     sed -i '/# theader aliases start/,/# theader aliases end/d' "$zshrc" 2>/dev/null || true
+    sed -i '/# plain prompt after theader removal start/,/# plain prompt after theader removal end/d' "$zshrc" 2>/dev/null || true
+    sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$zshrc" 2>/dev/null || true
 
     if grep -q '^ZSH_THEME="unstop"$' "$zshrc" 2>/dev/null; then
-      sed -i 's/^ZSH_THEME="unstop"$/ZSH_THEME="robbyrussell"/' "$zshrc"
+      sed -i 's/^ZSH_THEME="unstop"$/ZSH_THEME=""/' "$zshrc"
     fi
+
+    cat >>"$zshrc" <<'EOF'
+
+# plain prompt after theader removal start
+ZSH_THEME=""
+PROMPT='$ '
+RPROMPT=''
+# plain prompt after theader removal end
+EOF
   fi
 
   if [[ -f "$zprofile" ]]; then
