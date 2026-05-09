@@ -235,79 +235,83 @@ menu_setup() {
 }
 
 menu_zsh_setup() {
-  # Check if oh-my-zsh is installed
-  if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-    # Not installed → only show setup option
-    local subchoice
-    subchoice=$(
-      printf "1. Install Oh-my-zsh\n2. Back" |
-        fzf --prompt="Zsh Setup ➤ " --ansi --exit-0
-    )
-    case $subchoice in
-      "1. Install Oh-my-zsh")
-        echo -e "\033[1;32m[✔] Installing Oh-my-zsh...\033[0m"
-        install_oh_my_zsh
-        chsh -s zsh
-        ;;
-      "2. Back"|"")
-        return
-        ;;
-    esac
-  else
-    # Already installed → show main options
-    local main_options="1. Oh-my-zsh (Plugins Manager)\n2. Theader setup\n3. Back"
+  while true; do
+    # Check if oh-my-zsh is installed
+    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+      # Not installed → only show setup option
+      local subchoice
+      subchoice=$(
+        printf "1. Install Oh-my-zsh\n2. Back" |
+          fzf --prompt="Zsh Setup ➤ " --ansi --exit-0
+      )
+      case $subchoice in
+        "1. Install Oh-my-zsh")
+          echo -e "\033[1;32m[✔] Installing Oh-my-zsh...\033[0m"
+          install_oh_my_zsh
+          chsh -s zsh
+          ;;
+        "2. Back"|"")
+          return
+          ;;
+      esac
+    else
+      # Already installed → show main options
+      local main_options="1. Oh-my-zsh (Plugins Manager)\n2. Theader setup\n3. Back"
 
-    local subchoice
-    subchoice=$(
-      printf "%b" "$main_options" |
-        fzf --prompt="Zsh Options ➤ " --ansi --exit-0
-    )
+      local subchoice
+      subchoice=$(
+        printf "%b" "$main_options" |
+          fzf --prompt="Zsh Options ➤ " --ansi --exit-0
+      )
 
-    case $subchoice in
-      "1. Oh-my-zsh (Plugins Manager)")
-        # Plugins Manager submenu
-        local plugin_line
-        plugin_line=$(sed -n 's/^plugins=(\(.*\))/\1/p' "$ZSHRC" | tr -d ' ')
+      case $subchoice in
+        "1. Oh-my-zsh (Plugins Manager)")
+          while true; do
+            # Plugins Manager submenu
+            local plugin_line
+            plugin_line=$(sed -n 's/^plugins=(\(.*\))/\1/p' "$ZSHRC" | tr -d ' ')
 
-        local pm_options="1. Add Zsh Plugins"
-        # Show remove option only if plugins exist
-        if [[ -n "$plugin_line" ]]; then
-          pm_options+="\n2. Remove Plugins"
-          pm_options+="\n3. Back"
-        else
-          pm_options+="\n2. Back"
-        fi
+            local pm_options="1. Add Zsh Plugins"
+            # Show remove option only if plugins exist
+            if [[ -n "$plugin_line" ]]; then
+              pm_options+="\n2. Remove Plugins"
+              pm_options+="\n3. Back"
+            else
+              pm_options+="\n2. Back"
+            fi
 
-        local pm_choice
-        pm_choice=$(
-          printf "%b" "$pm_options" |
-            fzf --prompt="Plugins Manager ➤ " --ansi --exit-0
-        )
+            local pm_choice
+            pm_choice=$(
+              printf "%b" "$pm_options" |
+                fzf --prompt="Plugins Manager ➤ " --ansi --exit-0
+            )
 
-        case $pm_choice in
-          "1. Add Zsh Plugins")
-            echo -e "\033[1;34m[ℹ] Opening Add Plugins...\033[0m"
-            fzf_add_plugin
-            ;;
-          "2. Remove Plugins")
-            echo -e "\033[1;31m[⚠] Removing Zsh Plugins...\033[0m"
-            remove_zsh_plugin
-            ;;
-          "3. Back"|"2. Back"|"")
-            return
-            ;;
-        esac
-        ;;
-      "2. Theader setup")
-        echo -e "\033[1;36m[ℹ] Running Theader setup...\033[0m"
-        # Your Theader setup logic
-        menu_theader_setup
-        ;;
-      "3. Back"|"")
-        return
-        ;;
-    esac
-  fi
+            case $pm_choice in
+              "1. Add Zsh Plugins")
+                echo -e "\033[1;34m[ℹ] Opening Add Plugins...\033[0m"
+                fzf_add_plugin
+                ;;
+              "2. Remove Plugins")
+                echo -e "\033[1;31m[⚠] Removing Zsh Plugins...\033[0m"
+                remove_zsh_plugin
+                ;;
+              "3. Back"|"2. Back"|"")
+                break
+                ;;
+            esac
+          done
+          ;;
+        "2. Theader setup")
+          echo -e "\033[1;36m[ℹ] Running Theader setup...\033[0m"
+          # Your Theader setup logic
+          menu_theader_setup
+          ;;
+        "3. Back"|"")
+          return
+          ;;
+      esac
+    fi
+  done
 }
 
 # t-header setup
