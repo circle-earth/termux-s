@@ -152,6 +152,8 @@ quick_install() {
 
   echo -e "\033[1;36m[ℹ] Running Theader setup...\033[0m"
   setup_theader
+  echo -e "\033[1;36m[ℹ] Installing default ZSH plugins...\033[0m"
+  install_default_zsh_plugins
   echo -e "\033[1;32m[✔] Quick install complete. Restart Termux or run: zsh\033[0m"
 }
 

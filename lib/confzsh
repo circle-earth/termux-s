@@ -71,6 +71,26 @@ add_gh_plugin() {
   add_zsh_plugin "$plugin_name" # ✅ only basename
 }
 
+install_default_zsh_plugins() {
+  local defaults=(
+    "z"
+    "git"
+    "zsh-users/zsh-autosuggestions"
+    "zsh-users/zsh-syntax-highlighting"
+    "zsh-users/zsh-completions"
+  )
+
+  echo "⬇️  Installing default ZSH plugins..."
+
+  for plugin in "${defaults[@]}"; do
+    if [[ "$plugin" == */* ]]; then
+      add_gh_plugin "$plugin"
+    else
+      add_zsh_plugin "$plugin"
+    fi
+  done
+}
+
 fzf_add_plugin() {
   local choices=(
     "z"

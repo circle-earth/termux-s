@@ -42,6 +42,7 @@ This script will:
 
 - Install required packages
 - Set up ZSH and Oh-My-Zsh
+- Install default ZSH plugins (`z`, `git`, autosuggestions, syntax highlighting, completions)
 - Apply custom fonts and themes
 - Configure `.zshrc`, `.profile`, and `.aliases`
 
