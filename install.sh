@@ -609,6 +609,7 @@ EOF
   hash -r 2>/dev/null || true
   echo "Theader removed successfully ✅"
   echo "Open a new Termux session for the plain '~ $' prompt."
+  exit 0
 }
 # packages list must above 2000
 if ((pkgsize < 2000)); then
