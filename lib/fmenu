@@ -89,6 +89,7 @@ EOF
   else
     echo "title=$title" >>"$CONFIG"
   fi
+  rm -f "$HOME/.cache/theader/banner"
 
   echo -e "\033[32m[✔] Title saved: \"$title\" in $CONFIG\033[0m"
 }
@@ -203,6 +204,7 @@ function c_logo() {
   else
     echo "indent=$indent_choice" >>"$CONFIG"
   fi
+  rm -f "$HOME/.cache/theader/banner"
 
   # ====== Done ======
   echo -e "\033[32m[✔] Updated logo=$choice_clean, indent=$indent_choice\033[0m"

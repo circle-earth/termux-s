@@ -415,16 +415,24 @@ setup_theader() {
   change_zsh_theme "unstop"
   cp "$SCRIPT_DIR"/dotfile/.* "$HOME"/
   touch "$HOME/.hushlogin"
+  sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$HOME/.zshrc" 2>/dev/null || true
 
-  if ! grep -q 'source "$HOME/.profile"' "$HOME/.zshrc" 2>/dev/null; then
+  if ! grep -q 'THEADER_CACHE=' "$HOME/.zshrc" 2>/dev/null; then
     cat >>"$HOME/.zshrc" <<'EOF'
 
 HISTSIZE=100000
 SAVEHIST=100000
 export USER=$(whoami)
 source "$HOME/.profile"
-banner >> "${user}"
-cat "${user}"
+THEADER_CACHE="$HOME/.cache/theader/banner"
+if [[ -f "$THEADER_CACHE" ]]; then
+  clear
+  cat "$THEADER_CACHE"
+else
+  mkdir -p "$(dirname "$THEADER_CACHE")"
+  banner > "$THEADER_CACHE"
+  cat "$THEADER_CACHE"
+fi
 EOF
   fi
 
@@ -576,6 +584,7 @@ remove_theader() {
   fi
 
   rm -rf "$theader_dir"
+  rm -rf "$HOME/.cache/theader"
   rm -f "$HOME/.profile" "$HOME/.aliases" "$HOME/.hushlogin"
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
   rm -f "$zsh_custom/themes/unstop.zsh-theme"
