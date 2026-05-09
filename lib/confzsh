@@ -147,7 +147,6 @@ fzf_add_plugin() {
   # Process each selected line
   while IFS= read -r choice; do
     if [[ "$choice" == "0. Back" ]]; then
-      echo "↩️  Back"
       return
     fi
 
@@ -203,7 +202,6 @@ remove_zsh_plugin() {
   local selected_plugins=()
   while IFS= read -r line; do
     if [[ "$line" == "0. Back" ]]; then
-      echo "↩️  Back"
       return
     fi
 
