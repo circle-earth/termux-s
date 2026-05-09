@@ -586,13 +586,20 @@ remove_theader() {
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
   rm -f "$zsh_custom/themes/unstop.zsh-theme"
 
-  if command -v bash >/dev/null 2>&1; then
-    chsh -s "$(command -v bash)"
+  local bash_path
+  bash_path="$(command -v bash 2>/dev/null || true)"
+
+  if [[ -n "$bash_path" ]]; then
+    chsh -s "$bash_path" || chsh -s bash || true
   fi
 
   hash -r 2>/dev/null || true
   echo "Theader removed successfully ✅"
   echo "Restart Termux to return to the default welcome screen."
+
+  if [[ -n "$bash_path" && -t 0 && -t 1 ]]; then
+    exec "$bash_path" -l
+  fi
 }
 # packages list must above 2000
 if ((pkgsize < 2000)); then
