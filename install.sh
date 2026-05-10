@@ -468,7 +468,6 @@ EOF
   cat >>"$HOME/.zshrc" <<'EOF'
 
 # theader aliases start
-source "$HOME/.profile"
 unalias l ls l. la ll ll. lsg lag llg ils ila ill ilsg ilag illg 2>/dev/null
 
 case "${ZSH_THEME:-}" in

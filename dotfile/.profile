@@ -76,8 +76,10 @@ if command -v fzf >/dev/null 2>&1; then
     */zsh)
       # Ensure completion system is initialized
       fpath+=~/.zfunc
-      autoload -Uz compinit
-      compinit
+      if (( ! $+_comps )); then
+        autoload -Uz compinit
+        compinit -C
+      fi
 
       # Install/update fzf zsh completion if missing
       if [ ! -f ~/.zfunc/_fzf ]; then
