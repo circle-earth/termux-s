@@ -460,9 +460,7 @@ source "$HOME/.profile"
 EOF
   fi
 
-  if ! grep -q 'source "$HOME/.profile"' "$HOME/.zprofile" 2>/dev/null; then
-    printf '\n# profile source\nsource "$HOME/.profile"\n' >>"$HOME/.zprofile"
-  fi
+  sed -i '/# profile source/,+1d' "$HOME/.zprofile" 2>/dev/null || true
 
   sed -i '/# theader aliases start/,/# theader aliases end/d' "$HOME/.zshrc" 2>/dev/null || true
   cat >>"$HOME/.zshrc" <<'EOF'
