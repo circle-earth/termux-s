@@ -47,35 +47,6 @@ install_packages() {
       pkg install -y "$pkg"
     fi
   done
-# ---- Python dependencies for tools ----
-if command -v python >/dev/null 2>&1; then
-  if python - <<'EOF' >/dev/null 2>&1
-import requests
-EOF
-  then
-    echo "[✔] Python package 'requests' already installed"
-  else
-    echo "[➕] Installing Python package 'requests'..."
-    if command -v pip >/dev/null 2>&1; then
-      pip install -q --user requests --no-warn-script-location \
-        || python -m pip install --user requests --no-warn-script-location
-    else
-      python -m pip install --user requests --no-warn-script-location
-    fi
-
-    # verify install
-    if python - <<'EOF' >/dev/null 2>&1
-import requests
-EOF
-    then
-      echo "[✔] Python package 'requests' installed successfully"
-    else
-      echo "[✘] Failed to install Python package 'requests'"
-    fi
-  fi
-else
-  echo "[⚠️] Python not found. Skipping Python dependencies."
-fi
   # Check for lolcat
   if command -v lolcat >/dev/null 2>&1; then
     echo "[✔] lolcat already installed"
@@ -533,7 +504,7 @@ EOF
 # Install commit tool (ac / cak)
 mkdir -p "$PREFIX/bin"
 
-TOOL_SRC="$SCRIPT_DIR/tools/commit.py"
+TOOL_SRC="$SCRIPT_DIR/tools/commit.sh"
 TOOL_DST="$PREFIX/bin/ac"
 
 if [[ -f "$TOOL_SRC" ]]; then
