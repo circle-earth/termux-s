@@ -385,7 +385,7 @@ setup_theader() {
   create_custom_theme
   change_zsh_theme "unstop"
   cp "$SCRIPT_DIR"/dotfile/.* "$HOME"/
-  touch "$HOME/.hushlogin"
+  rm -f "$HOME/.hushlogin"
 
   if ! grep -q 'source "$HOME/.profile"' "$HOME/.zshrc" 2>/dev/null; then
     cat >>"$HOME/.zshrc" <<'EOF'
