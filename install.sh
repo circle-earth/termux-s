@@ -327,6 +327,67 @@ menu_theader_setup() {
   done
 }
 # theader setup function
+setup_theader_motd() {
+  mkdir -p "$HOME/.termux"
+  local motd="$HOME/.termux/motd.sh"
+  local backup="$HOME/.termux/motd.sh.theader-backup"
+
+  if [[ -f "$motd" ]] && ! grep -q '# theader managed motd start' "$motd" 2>/dev/null && [[ ! -f "$backup" ]]; then
+    cp "$motd" "$backup"
+  fi
+
+  cat >"$motd" <<'EOF'
+#!/data/data/com.termux/files/usr/bin/env bash
+# theader managed motd start
+set +e
+
+PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
+CONFIG="$HOME/.config/theader/theader.cfg"
+LOGO_DIR="$HOME/.config/theader/logo"
+
+fallback_motd() {
+  if [[ -f "$PREFIX/etc/motd" ]]; then
+    cat "$PREFIX/etc/motd"
+  fi
+}
+
+if ! command -v boxes >/dev/null 2>&1 ||
+   ! command -v figlet >/dev/null 2>&1 ||
+   ! command -v tput >/dev/null 2>&1 ||
+   ! command -v lolcat >/dev/null 2>&1 ||
+   [[ ! -f "$CONFIG" ]]; then
+  fallback_motd
+  exit 0
+fi
+
+term_width="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
+echo -e "\033[34m$(echo "" | boxes -a c -s "${term_width}x10" -d ansi-heavy)\033[0m"
+
+title="$(grep '^title=' "$CONFIG" 2>/dev/null | cut -d'=' -f2-)"
+[[ -z "$title" ]] && title="tyro 2.0"
+
+tput cup 4 0
+figlet -f pixelfont -c -t -p -w "$((term_width + 17))" "$title" | lolcat -f
+
+logo_file="$(grep '^logo=' "$CONFIG" 2>/dev/null | cut -d'=' -f2)"
+indent_size="$(grep '^indent=' "$CONFIG" 2>/dev/null | cut -d'=' -f2)"
+[[ -z "$indent_size" ]] && indent_size=2
+indent="$(printf '%*s' "$indent_size")"
+
+tput cup 1 0
+[[ -n "$logo_file" && -f "$LOGO_DIR/$logo_file" ]] && sed "s/^/${indent}/" "$LOGO_DIR/$logo_file"
+
+tput cup 1 0
+tput setaf 4
+for ((i=1; i<=8; i++)); do echo "┃"; done
+
+tput cup 10 0
+tput cnorm
+# theader managed motd end
+EOF
+  chmod 700 "$motd"
+}
+
 setup_theader() {
   theader_dir="$HOME/.config/theader"
 
@@ -386,6 +447,8 @@ setup_theader() {
   change_zsh_theme "unstop"
   cp "$SCRIPT_DIR"/dotfile/.* "$HOME"/
   rm -f "$HOME/.hushlogin"
+  setup_theader_motd
+  sed -i '/^HISTSIZE=100000$/,/^cat "\${user}"$/d' "$HOME/.zshrc" 2>/dev/null || true
 
   if ! grep -q 'source "$HOME/.profile"' "$HOME/.zshrc" 2>/dev/null; then
     cat >>"$HOME/.zshrc" <<'EOF'
@@ -394,8 +457,6 @@ HISTSIZE=100000
 SAVEHIST=100000
 export USER=$(whoami)
 source "$HOME/.profile"
-banner >> "${user}"
-cat "${user}"
 EOF
   fi
 
@@ -513,6 +574,8 @@ remove_theader() {
   local theader_dir="$HOME/.config/theader"
   local zshrc="${ZSHRC:-$HOME/.zshrc}"
   local zprofile="$HOME/.zprofile"
+  local motd="$HOME/.termux/motd.sh"
+  local motd_backup="$HOME/.termux/motd.sh.theader-backup"
 
   if [[ -f "$zshrc" ]]; then
     sed -i '/# theader aliases start/,/# theader aliases end/d' "$zshrc" 2>/dev/null || true
@@ -532,6 +595,13 @@ remove_theader() {
   rm -f "$HOME/.profile" "$HOME/.aliases" "$HOME/.hushlogin"
   rm -f "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.zshenv"
   rm -f "$HOME/.termux/shell"
+  if [[ -f "$motd" ]] && grep -q '# theader managed motd start' "$motd" 2>/dev/null; then
+    if [[ -f "$motd_backup" ]]; then
+      mv "$motd_backup" "$motd"
+    else
+      rm -f "$motd"
+    fi
+  fi
   rm -f "$PREFIX/bin/theader" "$PREFIX/bin/unstop" "$PREFIX/bin/clogo" "$PREFIX/bin/ctitle" "$PREFIX/bin/ctpro" "$PREFIX/bin/cztheme"
 
   cat >"$HOME/.zshrc" <<'EOF'
