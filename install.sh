@@ -416,8 +416,10 @@ setup_theader() {
       sed -i 's/plugins=(git)/plugins=()/' "$ZSHRC"
       echo "✅ Oh-my-zsh .zshrc restored"
     elif [ "$line_count" -gt 104 ] && [[ "$line_104" != *"oh-my-zsh"* ]]; then
-      echo "⚠️  .zshrc has $line_count lines and line 104 lacks 'oh-my-zsh', creating backup..."
-      cp "$ZSHRC" "$ZSHRC.backup.$(date +%Y%m%d%H%M%S)"
+      echo "⚠️  .zshrc has $line_count lines and line 104 lacks 'oh-my-zsh', preserving one backup..."
+      if [[ ! -f "$ZSHRC.theader-backup" ]]; then
+        cp "$ZSHRC" "$ZSHRC.theader-backup"
+      fi
 
       old_plugins=$(grep "^plugins=" "$ZSHRC" | head -n1)
 
