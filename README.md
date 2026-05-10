@@ -71,8 +71,6 @@ After installation, use the following commands:
 | `ctitle`   | Set custom header title      |
 | `ctpro`    | Switch `termux.properties`   |
 | `cztheme`  | Change ZSH theme             |
-| `ac`			 | Smart Auto-Commit Tool				|
-| `cak`			 | API Key Manager						  |
 
 ## 🖼️ Preview
 

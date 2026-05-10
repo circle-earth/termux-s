@@ -501,26 +501,7 @@ EOF
     echo "Error: $theader_dir/bin/theader not found!"
   fi
 
-# Install commit tool (ac / cak)
-mkdir -p "$PREFIX/bin"
-
-TOOL_SRC="$SCRIPT_DIR/tools/commit.sh"
-TOOL_DST="$PREFIX/bin/ac"
-
-if [[ -f "$TOOL_SRC" ]]; then
-  install -Dm700 "$TOOL_SRC" "$TOOL_DST" || {
-    echo "[✘] Failed to install ac"
-    return 1
-  }
-  echo "✅ ac installed to $TOOL_DST"
-else
-  echo "[✘] Missing $TOOL_SRC"
-  return 1
-fi
-
-# change-api-key helper
-rm -f "$PREFIX/bin/cak"
-ln -sfr "$TOOL_DST" "$PREFIX/bin/cak"
+rm -f "$PREFIX/bin/ac" "$PREFIX/bin/cak"
 
 # refresh shell command cache
 hash -r 2>/dev/null || true
