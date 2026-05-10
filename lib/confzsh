@@ -12,6 +12,7 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
 install_oh_my_zsh() {
   if [ -d "$ZSH" ]; then
     echo "⚠️  Oh-My-Zsh already installed at $ZSH"
+    optimize_oh_my_zsh_startup
     return
   fi
 
@@ -26,7 +27,25 @@ install_oh_my_zsh() {
   fi
 
   echo "✅ Oh-My-Zsh installed at $ZSH"
+  optimize_oh_my_zsh_startup
   echo "👉 Restart your shell or run: source ~/.zshrc"
+}
+
+optimize_oh_my_zsh_startup() {
+  local omz="$ZSH/oh-my-zsh.sh"
+
+  if [ -f "$omz" ]; then
+    sed -i \
+      -e 's/compinit -i -d "$ZSH_COMPDUMP"/compinit -C -i -d "$ZSH_COMPDUMP"/' \
+      -e 's/compinit -u -d "$ZSH_COMPDUMP"/compinit -C -u -d "$ZSH_COMPDUMP"/' \
+      "$omz"
+    echo "✅ Oh-My-Zsh completion cache mode enabled"
+  fi
+
+  if [ -f "$ZSHRC" ] && ! grep -q '^ZSH_DISABLE_COMPFIX=true$' "$ZSHRC"; then
+    sed -i '/^source \$ZSH\/oh-my-zsh\.sh$/i ZSH_DISABLE_COMPFIX=true' "$ZSHRC"
+    echo "✅ Oh-My-Zsh compfix check disabled for faster startup"
+  fi
 }
 
 # Function 1: Safe add to .zshrc
@@ -91,6 +110,11 @@ install_default_zsh_plugins() {
       add_zsh_plugin "$plugin"
     fi
   done
+
+  optimize_oh_my_zsh_startup
+  if command -v zsh >/dev/null 2>&1; then
+    zsh -ic exit >/dev/null 2>&1 || true
+  fi
 }
 
 fzf_add_plugin() {
