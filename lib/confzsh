@@ -55,7 +55,6 @@ enable_lazy_zsh_plugins() {
 
   sed -i -E \
     -e 's/(^plugins=\([^)]*)\bzsh-autosuggestions\b ?/\1/' \
-    -e 's/(^plugins=\([^)]*)\bzsh-syntax-highlighting\b ?/\1/' \
     -e 's/  +/ /g' \
     -e 's/plugins=\( /plugins=(/' \
     -e 's/ \)/)/' \
@@ -70,9 +69,6 @@ theader_load_lazy_zsh_plugins() {
   local plugin_file
 
   plugin_file="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-  [[ -r "$plugin_file" ]] && source "$plugin_file"
-
-  plugin_file="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh"
   [[ -r "$plugin_file" ]] && source "$plugin_file"
 }
 
