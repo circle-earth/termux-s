@@ -48,36 +48,14 @@ optimize_oh_my_zsh_startup() {
   fi
 }
 
-enable_lazy_zsh_plugins() {
+ensure_zsh_plugin_startup() {
   if [ ! -f "$ZSHRC" ]; then
     return
   fi
 
-  sed -i -E \
-    -e 's/(^plugins=\([^)]*)\bzsh-autosuggestions\b ?/\1/' \
-    -e 's/  +/ /g' \
-    -e 's/plugins=\( /plugins=(/' \
-    -e 's/ \)/)/' \
-    "$ZSHRC"
-
   sed -i '/# theader lazy zsh plugins start/,/# theader lazy zsh plugins end/d' "$ZSHRC" 2>/dev/null || true
-  cat >>"$ZSHRC" <<'EOF'
-
-# theader lazy zsh plugins start
-theader_load_lazy_zsh_plugins() {
-  unfunction theader_load_lazy_zsh_plugins 2>/dev/null || true
-  local plugin_file
-
-  plugin_file="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh"
-  [[ -r "$plugin_file" ]] && source "$plugin_file"
-}
-
-if [[ -o interactive ]]; then
-  zmodload zsh/sched 2>/dev/null && sched +1 theader_load_lazy_zsh_plugins || theader_load_lazy_zsh_plugins
-fi
-# theader lazy zsh plugins end
-EOF
-  echo "✅ Heavy zsh plugins will load after the first prompt"
+  add_zsh_plugin "zsh-autosuggestions"
+  add_zsh_plugin "zsh-syntax-highlighting"
 }
 
 # Function 1: Safe add to .zshrc
@@ -144,7 +122,7 @@ install_default_zsh_plugins() {
   done
 
   optimize_oh_my_zsh_startup
-  enable_lazy_zsh_plugins
+  ensure_zsh_plugin_startup
   if command -v zsh >/dev/null 2>&1; then
     zsh -ic exit >/dev/null 2>&1 || true
   fi
