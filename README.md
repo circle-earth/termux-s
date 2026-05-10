@@ -66,7 +66,6 @@ After installation, use the following commands:
 | Command     | Description                  |
 |------------|------------------------------|
 | `unstop`   | Launch interactive setup     |
-| `theader`  | Launch interactive setup     |
 | `clogo`    | Change logo                  |
 | `ctitle`   | Set custom header title      |
 | `ctpro`    | Switch `termux.properties`   |

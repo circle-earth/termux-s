@@ -33,12 +33,12 @@ run_cmd() {
 
 # === 1) Symlink dispatch (clogo, ctitle, …) ===
 cmd="$(basename "$0")"
-if [[ "$cmd" != "theader" && "$cmd" != "unstop" && -n "${CMD_FUNC[$cmd]:-}" ]]; then
+if [[ "$cmd" != "unstop" && -n "${CMD_FUNC[$cmd]:-}" ]]; then
   run_cmd "$cmd" "$@"
   exit 0
 fi
 
-# === 2) Subcommand syntax: theader/unstop <cmd> [args...] ===
+# === 2) Subcommand syntax: unstop <cmd> [args...] ===
 if [[ $# -gt 0 && -n "${CMD_FUNC[$1]:-}" ]]; then
   sub="$1"; shift
   run_cmd "$sub" "$@"

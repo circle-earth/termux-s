@@ -491,14 +491,16 @@ EOF
   if [[ -f $SCRIPT_DIR/colors.properties ]]; then
     cp -r $SCRIPT_DIR/colors.properties $HOME/.termux/
   fi
-  if [[ -f $theader_dir/bin/theader ]]; then
-    install -Dm700 $theader_dir/bin/theader "$PREFIX"/bin/theader
-    for i in unstop clogo ctitle ctpro cztheme; do
-      ln -sfr "$PREFIX"/bin/theader "$PREFIX"/bin/$i
+  rm -f "$theader_dir/bin/theader"
+  if [[ -f $theader_dir/bin/unstop ]]; then
+    install -Dm700 $theader_dir/bin/unstop "$PREFIX"/bin/unstop
+    for i in clogo ctitle ctpro cztheme; do
+      ln -sfr "$PREFIX"/bin/unstop "$PREFIX"/bin/$i
     done
-    echo "theader installed successfully ✅"
+    rm -f "$PREFIX"/bin/theader
+    echo "unstop installed successfully ✅"
   else
-    echo "Error: $theader_dir/bin/theader not found!"
+    echo "Error: $theader_dir/bin/unstop not found!"
   fi
 
 rm -f "$PREFIX/bin/ac" "$PREFIX/bin/cak"
