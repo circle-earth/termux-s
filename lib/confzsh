@@ -76,9 +76,17 @@ if [[ -o interactive ]]; then
     setopt localoptions pipefail no_aliases 2>/dev/null
     local dir
     dir="$(
-      FZF_DEFAULT_COMMAND=${FZF_ALT_C_COMMAND:-} \
-      FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --walker=dir,follow,hidden --scheme=path" "${FZF_ALT_C_OPTS-} +m") \
-      FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) < /dev/tty
+      {
+        printf '../\n'
+        if [[ -n "${FZF_ALT_C_COMMAND:-}" ]]; then
+          eval "$FZF_ALT_C_COMMAND"
+        elif command -v fd >/dev/null 2>&1; then
+          fd --type d --hidden --follow --exclude .git . 2>/dev/null
+        else
+          find . -path ./.git -prune -o -type d -print 2>/dev/null | sed 's#^\./##' | sed '/^\.$/d'
+        fi
+      } | FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --scheme=path" "${FZF_ALT_C_OPTS-} +m") \
+        FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) < /dev/tty
     )"
     [[ -n "$dir" ]] && builtin cd -- "${dir:a}"
     zle reset-prompt
