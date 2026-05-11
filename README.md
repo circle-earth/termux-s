@@ -30,11 +30,12 @@ gem install lolcat
 
 ## 🧑‍💻 Installation
 
-1. `pkg update -y && pkg upgrade -y && pkg install git fzf -y`
-2. `git clone https://github.com/circle-earth/Termux.git`
-3. `cd Termux/`
-4. `ls`
-5. `bash install.sh`
+```bash
+pkg update -y && pkg install git fzf -y
+git clone https://github.com/circle-earth/Termux.git
+cd Termux
+bash install.sh
+```
 6. Choose `Quick Install` for automatic setup, or `Manual Install` for step-by-step setup.
 7. After complete all processing just --open new session-- or `source ~/.zshrc`
 
