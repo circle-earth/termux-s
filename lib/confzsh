@@ -71,6 +71,22 @@ if [[ -o interactive ]]; then
   fzf_keys="${PREFIX:-/data/data/com.termux/files/usr}/share/fzf/key-bindings.zsh"
   [[ -r "$fzf_keys" ]] && source "$fzf_keys" 2>/dev/null
   unset fzf_keys
+
+  theader-fzf-cd-widget() {
+    setopt localoptions pipefail no_aliases 2>/dev/null
+    local dir
+    dir="$(
+      FZF_DEFAULT_COMMAND=${FZF_ALT_C_COMMAND:-} \
+      FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --walker=dir,follow,hidden --scheme=path" "${FZF_ALT_C_OPTS-} +m") \
+      FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) < /dev/tty
+    )"
+    [[ -n "$dir" ]] && builtin cd -- "${dir:a}"
+    zle reset-prompt
+  }
+  zle -N theader-fzf-cd-widget
+  bindkey -M emacs '\ec' theader-fzf-cd-widget
+  bindkey -M vicmd '\ec' theader-fzf-cd-widget
+  bindkey -M viins '\ec' theader-fzf-cd-widget
 fi
 # theader fzf key bindings end
 EOF
