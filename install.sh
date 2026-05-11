@@ -461,6 +461,7 @@ export USER=$(whoami)
 source "$HOME/.profile"
 EOF
   fi
+  ensure_fzf_zsh_key_bindings
 
   sed -i '/# profile source/,+1d' "$HOME/.zprofile" 2>/dev/null || true
 

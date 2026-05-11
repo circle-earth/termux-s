@@ -58,6 +58,25 @@ ensure_zsh_plugin_startup() {
   add_zsh_plugin "zsh-syntax-highlighting"
 }
 
+ensure_fzf_zsh_key_bindings() {
+  if [ ! -f "$ZSHRC" ]; then
+    return
+  fi
+
+  sed -i '/# theader fzf key bindings start/,/# theader fzf key bindings end/d' "$ZSHRC" 2>/dev/null || true
+  cat >>"$ZSHRC" <<'EOF'
+
+# theader fzf key bindings start
+if [[ -o interactive ]]; then
+  fzf_keys="${PREFIX:-/data/data/com.termux/files/usr}/share/fzf/key-bindings.zsh"
+  [[ -r "$fzf_keys" ]] && source "$fzf_keys" 2>/dev/null
+  unset fzf_keys
+fi
+# theader fzf key bindings end
+EOF
+  echo "✅ fzf zsh key bindings enabled"
+}
+
 # Function 1: Safe add to .zshrc
 add_zsh_plugin() {
   local plugin=" $1"
@@ -123,6 +142,7 @@ install_default_zsh_plugins() {
 
   optimize_oh_my_zsh_startup
   ensure_zsh_plugin_startup
+  ensure_fzf_zsh_key_bindings
   if command -v zsh >/dev/null 2>&1; then
     zsh -ic exit >/dev/null 2>&1 || true
   fi
