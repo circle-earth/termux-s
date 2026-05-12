@@ -480,9 +480,7 @@ case "${ZSH_THEME:-}" in
         local cols="${COLUMNS:-80}"
         local gap="  "
         local width=$(( (cols - 4) / 3 ))
-        local width2=$(( (cols - 2) / 2 ))
-        local per_row=3
-        local max_len=0
+        local gap_len=${#gap}
         local i
         local item
         local pad
@@ -493,38 +491,43 @@ case "${ZSH_THEME:-}" in
         local keep_tail
         local max_name
         local display_item
+        local span
+        local cell_width
         local line
-        local j
-        local end
-        local -a color_items plain_items cells
+        local used=0
+        local -a color_items plain_items
 
+        (( width < 12 )) && width=$cols
         color_items=("${(@f)$(command logo-ls -1 "$@")}")
         plain_items=("${(@f)$(command logo-ls -1 -c "$@")}")
-
-        for item in "${plain_items[@]}"; do
-          item="${item%%[[:space:]]##}"
-          (( ${#item} > max_len )) && max_len=${#item}
-        done
-
-        if (( cols < 52 )); then
-          per_row=1
-          width=$cols
-        elif (( max_len <= width )); then
-          per_row=3
-        elif (( width2 >= 30 )); then
-          per_row=2
-          width=$width2
-        else
-          per_row=1
-          width=$cols
-        fi
 
         for (( i = 1; i <= ${#plain_items}; i++ )); do
           item="${plain_items[i]%%[[:space:]]##}"
           icon="${color_items[i]%% *}"
           plain_icon="${item%% *}"
           name="${item#* }"
-          max_name=$(( width - ${#plain_icon} - 1 ))
+
+          if (( cols < 52 )); then
+            span=3
+            cell_width=$cols
+          elif (( ${#item} <= width )); then
+            span=1
+            cell_width=$width
+          elif (( ${#item} <= width * 2 + gap_len )); then
+            span=2
+            cell_width=$(( width * 2 + gap_len ))
+          else
+            span=3
+            cell_width=$cols
+          fi
+
+          if (( used > 0 && used + span > 3 )); then
+            print -r -- "$line"
+            line=""
+            used=0
+          fi
+
+          max_name=$(( cell_width - ${#plain_icon} - 1 ))
           (( max_name < 1 )) && max_name=1
           if (( ${#name} > max_name )); then
             if (( max_name > 18 )); then
@@ -536,20 +539,18 @@ case "${ZSH_THEME:-}" in
             fi
           fi
           display_item="${plain_icon} ${name}"
-          pad=$(( width - ${#display_item} ))
+          pad=$(( cell_width - ${#display_item} ))
           (( pad < 0 )) && pad=0
-          cells+=("${icon} ${name}${(l:$pad:: :)}")
+          (( used > 0 )) && line+="$gap"
+          line+="${icon} ${name}${(l:$pad:: :)}"
+          used=$(( used + span ))
+          if (( used >= 3 )); then
+            print -r -- "$line"
+            line=""
+            used=0
+          fi
         done
-
-        for (( i = 1; i <= ${#cells}; i += per_row )); do
-          line="${cells[i]}"
-          end=$(( i + per_row - 1 ))
-          (( end > ${#cells} )) && end=${#cells}
-          for (( j = i + 1; j <= end; j++ )); do
-            line+="${gap}${cells[j]}"
-          done
-          print -r -- "$line"
-        done
+        [[ -n "$line" ]] && print -r -- "$line"
       }
 
       alias l='theader_logo_grid'
