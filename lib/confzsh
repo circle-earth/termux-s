@@ -73,8 +73,10 @@ if [[ -o interactive ]]; then
   unset fzf_keys
 
   theader-fzf-cd-widget() {
-    setopt localoptions pipefail no_aliases 2>/dev/null
+    setopt localoptions no_aliases 2>/dev/null
     local dir
+    local ret
+    zle -I
     dir="$(
       {
         printf '../\n'
@@ -86,10 +88,18 @@ if [[ -o interactive ]]; then
           find . -path ./.git -prune -o -type d -print 2>/dev/null | sed 's#^\./##' | sed '/^\.$/d'
         fi
       } | FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --scheme=path" "${FZF_ALT_C_OPTS-} +m") \
-        FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) < /dev/tty
+        FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd)
     )"
-    [[ -n "$dir" ]] && builtin cd -- "${dir:a}"
+    ret=$?
+    if [[ -z "$dir" ]]; then
+      zle redisplay
+      return 0
+    fi
+    builtin cd -- "$dir" || ret=$?
+    unset dir
     zle reset-prompt
+    zle -R
+    return "$ret"
   }
   zle -N theader-fzf-cd-widget
   bindkey -M emacs '\ec' theader-fzf-cd-widget

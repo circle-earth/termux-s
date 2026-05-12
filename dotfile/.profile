@@ -9,11 +9,13 @@ case "$SHELL" in
 
       # =========[ File Insert Widget: Alt+T ]=========
       fzf-file-widget() {
+        setopt localoptions pipefail no_aliases 2>/dev/null
         local result
-        result=$(fd -H -t f -E .git | \
+        result=$(FZF_DEFAULT_COMMAND='fd -H -t f -E .git' \
           fzf --prompt="Select file ➤ " --exit-0 \
               --height=40% --border --reverse \
               --ansi --no-info --no-scrollbar \
+              < /dev/tty \
         )
         local ret=$?
 
@@ -24,29 +26,40 @@ case "$SHELL" in
         zle reset-prompt
       }
       zle -N fzf-file-widget
-      bindkey '^[t' fzf-file-widget
+      bindkey -M emacs '^[t' fzf-file-widget
+      bindkey -M vicmd '^[t' fzf-file-widget
+      bindkey -M viins '^[t' fzf-file-widget
 
       # =========[ Directory CD Widget: Alt+C ]=========
       fzf-cd-widget() {
+        setopt localoptions no_aliases 2>/dev/null
         local dir
-        dir=$(fd -H -t d -E .git | \
-          fzf --prompt="Select directory ➤ " --exit-0 \
+        zle -I
+        dir=$({
+          printf '../\n'
+          fd -H -t d -E .git 2>/dev/null || true
+        } | fzf --prompt="Select directory ➤ " --exit-0 \
               --height=40% --border --reverse \
               --ansi --no-info --no-scrollbar \
         )
         local rc=$?
 
         if (( rc == 0 )) && [[ -n "$dir" ]]; then
-          cd "$dir" || return
+          builtin cd -- "$dir" || rc=$?
         fi
 
         zle reset-prompt
+        zle -R
+        return "$rc"
       }
       zle -N fzf-cd-widget
-      bindkey '^[c' fzf-cd-widget
+      bindkey -M emacs '^[c' fzf-cd-widget
+      bindkey -M vicmd '^[c' fzf-cd-widget
+      bindkey -M viins '^[c' fzf-cd-widget
 
       # =========[ History Search Widget: Ctrl+R ]=========
       fzf-history-widget() {
+        setopt localoptions pipefail no_aliases 2>/dev/null
         local selected
         selected=$(fc -l 1 | \
           fzf --tac --no-sort --reverse \
@@ -64,7 +77,9 @@ case "$SHELL" in
         zle reset-prompt
       }
       zle -N fzf-history-widget
-      bindkey '^R' fzf-history-widget
+      bindkey -M emacs '^R' fzf-history-widget
+      bindkey -M vicmd '^R' fzf-history-widget
+      bindkey -M viins '^R' fzf-history-widget
 
     fi
     ;;
