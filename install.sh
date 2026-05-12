@@ -474,17 +474,43 @@ unalias l ls l. la ll ll. lsg lag llg ils ila ill ilsg ilag illg 2>/dev/null
 case "${ZSH_THEME:-}" in
   unstop)
     if command -v logo-ls >/dev/null 2>&1; then
-      alias l='logo-ls'
-      alias ls='logo-ls'
-      alias l.='logo-ls -d .*'
-      alias la='logo-ls -A'
+      theader_logo_grid() {
+        emulate -L zsh
+        setopt no_aliases extended_glob
+        local cols="${COLUMNS:-80}"
+        local gap="  "
+        local width=$(( (cols - 4) / 3 ))
+        local i
+        local item
+        local -a items cells
+
+        (( width < 18 )) && width=$(( cols > 40 ? 20 : cols ))
+        items=("${(@f)$(command logo-ls -1 -c "$@")}")
+
+        for item in "${items[@]}"; do
+          item="${item%%[[:space:]]##}"
+          if (( ${#item} > width )); then
+            item="${item[1,$(( width - 1 ))]}…"
+          fi
+          cells+=("${(r:$width:: :)item}")
+        done
+
+        for (( i = 1; i <= ${#cells}; i += 3 )); do
+          print -r -- "${cells[i]}${gap}${cells[i+1]-}${gap}${cells[i+2]-}"
+        done
+      }
+
+      alias l='theader_logo_grid'
+      alias ls='theader_logo_grid'
+      alias l.='theader_logo_grid -d .*'
+      alias la='theader_logo_grid -A'
       alias ll='logo-ls -al'
       alias ll.='logo-ls -ald .*'
       alias lsg='logo-ls -D'
       alias lag='logo-ls -AD'
       alias llg='logo-ls -alD'
-      alias ils='logo-ls'
-      alias ila='logo-ls -A'
+      alias ils='theader_logo_grid'
+      alias ila='theader_logo_grid -A'
       alias ill='logo-ls -al'
       alias ilsg='logo-ls -D'
       alias ilag='logo-ls -AD'

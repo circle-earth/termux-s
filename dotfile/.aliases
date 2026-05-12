@@ -1,17 +1,26 @@
 # =========[ logo-ls aliases Setup ]=========
 
 if [ -n "$(command -v logo-ls)" ]; then
-    alias l='logo-ls'
-    alias ls='logo-ls'
-    alias l.='logo-ls -d .*'
-    alias la='logo-ls -A'
+    if [ -n "${ZSH_VERSION:-}" ] && whence -w theader_logo_grid >/dev/null 2>&1; then
+        alias l='theader_logo_grid'
+        alias ls='theader_logo_grid'
+        alias l.='theader_logo_grid -d .*'
+        alias la='theader_logo_grid -A'
+        alias ils='theader_logo_grid'
+        alias ila='theader_logo_grid -A'
+    else
+        alias l='logo-ls'
+        alias ls='logo-ls'
+        alias l.='logo-ls -d .*'
+        alias la='logo-ls -A'
+        alias ils='logo-ls'
+        alias ila='logo-ls -A'
+    fi
     alias ll='logo-ls -al'
     alias ll.='logo-ls -ald .*'
     alias lsg='logo-ls -D'
     alias lag='logo-ls -AD'
     alias llg='logo-ls -alD'
-    alias ils='logo-ls'
-    alias ila='logo-ls -A'
     alias ill='logo-ls -al'
     alias ilsg='logo-ls -D'
     alias ilag='logo-ls -AD'
