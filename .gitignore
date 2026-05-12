@@ -1,0 +1,16 @@
+# Local editor/runtime files
+*.log
+*.tmp
+*.bak
+*.backup
+*.backup.*
+*~
+
+# OS/editor metadata
+.DS_Store
+.idea/
+.vscode/
+
+# Dependency/cache directories
+node_modules/
+.cache/

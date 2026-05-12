@@ -480,31 +480,75 @@ case "${ZSH_THEME:-}" in
         local cols="${COLUMNS:-80}"
         local gap="  "
         local width=$(( (cols - 4) / 3 ))
+        local width2=$(( (cols - 2) / 2 ))
+        local per_row=3
+        local max_len=0
         local i
         local item
         local pad
         local icon
+        local plain_icon
         local name
+        local keep_head
+        local keep_tail
+        local max_name
+        local display_item
+        local line
+        local j
+        local end
         local -a color_items plain_items cells
 
-        (( width < 18 )) && width=$(( cols > 40 ? 20 : cols ))
         color_items=("${(@f)$(command logo-ls -1 "$@")}")
         plain_items=("${(@f)$(command logo-ls -1 -c "$@")}")
 
+        for item in "${plain_items[@]}"; do
+          item="${item%%[[:space:]]##}"
+          (( ${#item} > max_len )) && max_len=${#item}
+        done
+
+        if (( cols < 52 )); then
+          per_row=1
+          width=$cols
+        elif (( max_len <= width )); then
+          per_row=3
+        elif (( width2 >= 30 )); then
+          per_row=2
+          width=$width2
+        else
+          per_row=1
+          width=$cols
+        fi
+
         for (( i = 1; i <= ${#plain_items}; i++ )); do
           item="${plain_items[i]%%[[:space:]]##}"
-          if (( ${#item} > width )); then
-            item="${item[1,$(( width - 1 ))]}…"
-          fi
           icon="${color_items[i]%% *}"
-          name="${item#? }"
-          pad=$(( width - ${#item} ))
+          plain_icon="${item%% *}"
+          name="${item#* }"
+          max_name=$(( width - ${#plain_icon} - 1 ))
+          (( max_name < 1 )) && max_name=1
+          if (( ${#name} > max_name )); then
+            if (( max_name > 18 )); then
+              keep_tail=12
+              keep_head=$(( max_name - keep_tail - 1 ))
+              name="${name[1,$keep_head]}…${name[-$keep_tail,-1]}"
+            else
+              name="${name[1,$(( max_name - 1 ))]}…"
+            fi
+          fi
+          display_item="${plain_icon} ${name}"
+          pad=$(( width - ${#display_item} ))
           (( pad < 0 )) && pad=0
           cells+=("${icon} ${name}${(l:$pad:: :)}")
         done
 
-        for (( i = 1; i <= ${#cells}; i += 3 )); do
-          print -r -- "${cells[i]}${gap}${cells[i+1]-}${gap}${cells[i+2]-}"
+        for (( i = 1; i <= ${#cells}; i += per_row )); do
+          line="${cells[i]}"
+          end=$(( i + per_row - 1 ))
+          (( end > ${#cells} )) && end=${#cells}
+          for (( j = i + 1; j <= end; j++ )); do
+            line+="${gap}${cells[j]}"
+          done
+          print -r -- "$line"
         done
       }
 
