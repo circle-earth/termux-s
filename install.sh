@@ -482,17 +482,25 @@ case "${ZSH_THEME:-}" in
         local width=$(( (cols - 4) / 3 ))
         local i
         local item
-        local -a items cells
+        local pad
+        local icon
+        local name
+        local -a color_items plain_items cells
 
         (( width < 18 )) && width=$(( cols > 40 ? 20 : cols ))
-        items=("${(@f)$(command logo-ls -1 -c "$@")}")
+        color_items=("${(@f)$(command logo-ls -1 "$@")}")
+        plain_items=("${(@f)$(command logo-ls -1 -c "$@")}")
 
-        for item in "${items[@]}"; do
-          item="${item%%[[:space:]]##}"
+        for (( i = 1; i <= ${#plain_items}; i++ )); do
+          item="${plain_items[i]%%[[:space:]]##}"
           if (( ${#item} > width )); then
             item="${item[1,$(( width - 1 ))]}…"
           fi
-          cells+=("${(r:$width:: :)item}")
+          icon="${color_items[i]%% *}"
+          name="${item#? }"
+          pad=$(( width - ${#item} ))
+          (( pad < 0 )) && pad=0
+          cells+=("${icon} ${name}${(l:$pad:: :)}")
         done
 
         for (( i = 1; i <= ${#cells}; i += 3 )); do
