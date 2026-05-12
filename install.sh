@@ -474,96 +474,17 @@ unalias l ls l. la ll ll. lsg lag llg ils ila ill ilsg ilag illg 2>/dev/null
 case "${ZSH_THEME:-}" in
   unstop)
     if command -v logo-ls >/dev/null 2>&1; then
-      theader_logo_grid() {
-        emulate -L zsh
-        setopt no_aliases extended_glob
-        local cols="${COLUMNS:-80}"
-        local gap="  "
-        local width=$(( (cols - 4) / 3 ))
-        local gap_len=${#gap}
-        local i
-        local item
-        local pad
-        local icon
-        local plain_icon
-        local name
-        local keep_head
-        local keep_tail
-        local max_name
-        local display_item
-        local span
-        local cell_width
-        local line
-        local used=0
-        local -a color_items plain_items
-
-        (( width < 12 )) && width=$cols
-        color_items=("${(@f)$(command logo-ls -1 "$@")}")
-        plain_items=("${(@f)$(command logo-ls -1 -c "$@")}")
-
-        for (( i = 1; i <= ${#plain_items}; i++ )); do
-          item="${plain_items[i]%%[[:space:]]##}"
-          icon="${color_items[i]%% *}"
-          plain_icon="${item%% *}"
-          name="${item#* }"
-
-          if (( cols < 52 )); then
-            span=3
-            cell_width=$cols
-          elif (( ${#item} <= width )); then
-            span=1
-            cell_width=$width
-          elif (( ${#item} <= width * 2 + gap_len )); then
-            span=2
-            cell_width=$(( width * 2 + gap_len ))
-          else
-            span=3
-            cell_width=$cols
-          fi
-
-          if (( used > 0 && used + span > 3 )); then
-            print -r -- "$line"
-            line=""
-            used=0
-          fi
-
-          max_name=$(( cell_width - ${#plain_icon} - 1 ))
-          (( max_name < 1 )) && max_name=1
-          if (( ${#name} > max_name )); then
-            if (( max_name > 18 )); then
-              keep_tail=12
-              keep_head=$(( max_name - keep_tail - 1 ))
-              name="${name[1,$keep_head]}…${name[-$keep_tail,-1]}"
-            else
-              name="${name[1,$(( max_name - 1 ))]}…"
-            fi
-          fi
-          display_item="${plain_icon} ${name}"
-          pad=$(( cell_width - ${#display_item} ))
-          (( pad < 0 )) && pad=0
-          (( used > 0 )) && line+="$gap"
-          line+="${icon} ${name}${(l:$pad:: :)}"
-          used=$(( used + span ))
-          if (( used >= 3 )); then
-            print -r -- "$line"
-            line=""
-            used=0
-          fi
-        done
-        [[ -n "$line" ]] && print -r -- "$line"
-      }
-
-      alias l='theader_logo_grid'
-      alias ls='theader_logo_grid'
-      alias l.='theader_logo_grid -d .*'
-      alias la='theader_logo_grid -A'
+      alias l='logo-ls'
+      alias ls='logo-ls'
+      alias l.='logo-ls -d .*'
+      alias la='logo-ls -A'
       alias ll='logo-ls -al'
       alias ll.='logo-ls -ald .*'
       alias lsg='logo-ls -D'
       alias lag='logo-ls -AD'
       alias llg='logo-ls -alD'
-      alias ils='theader_logo_grid'
-      alias ila='theader_logo_grid -A'
+      alias ils='logo-ls'
+      alias ila='logo-ls -A'
       alias ill='logo-ls -al'
       alias ilsg='logo-ls -D'
       alias ilag='logo-ls -AD'
